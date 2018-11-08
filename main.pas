@@ -10,9 +10,9 @@ type
   TMainForm = class(TForm)
     BtnConf: TButton;
     BtnSend: TButton;
-    StringGridChannels: TStringGrid;
     procedure BtnSendClick(Sender: TObject);
     function FormatingDateTime(s: string): TDateTime;
+    procedure BtnConfClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -26,15 +26,29 @@ implementation
 
 {$R *.dfm}
 
+uses config;
+
+procedure TMainForm.BtnConfClick(Sender: TObject);
+begin
+   if (not Assigned(ConfigForm)) then   // проверка существовани€ ‘ормы (если нет, то
+       ConfigForm:=TConfigForm.Create(Self);    // создание ‘ормы)
+   ConfigForm.Show;
+end;
+
 procedure TMainForm.BtnSendClick(Sender: TObject);
 const
   xlCellTypeLastCell = $0000000B;
 var
   ExcelApp, ExcelSheet: OLEVariant;
   ChannelsSrc: Variant;
+  ChannelsResult: array of array of string;
   x, y: Integer;
-  d: TDateTime;
+  a, i, j, N: Integer;
+  s: string;
 begin
+  N:=1;
+  a:=1;
+  s:='';
   // создание OLE-объекта Excel
   ExcelApp := CreateOleObject('Excel.Application');
 
@@ -58,19 +72,30 @@ begin
   ExcelApp.Quit;
   ExcelApp := Unassigned;
   ExcelSheet := Unassigned;
+  // »щем выключенные каналы и если врем€ выключени€ больше N дней пишем в результирующий массив
+  SetLength(ChannelsResult,x,3);
+  j:=0;
+  for i := 2 to x do
+    begin
+      if ChannelsSrc[i,4] = 'OFF' then
+        if DaysBetween(Now, FormatingDateTime(ChannelsSrc[i,6])) >= N then
+          begin
+            ChannelsResult[j,0]:=ChannelsSrc[i,1];
+            if ChannelsSrc[i,3] = 'M' then ChannelsResult[j,1]:='ќсновной канал';
+            if ChannelsSrc[i,3] = 'B' then ChannelsResult[j,1]:='–езервный канал';
+            ChannelsResult[j,2]:=inttostr(DaysBetween(Now, FormatingDateTime(ChannelsSrc[i,6])));
+            j:=j+1;
+          end;
 
-  // назначение размера StringGrid по размеру полученного диапазона €чеек
-  StringGridChannels.RowCount := x;
-  StringGridChannels.ColCount := y;
-
-  // заполнение таблицы StringGrid значени€ми массива
-  for x := 1 to StringGridChannels.ColCount do
-    for y := 1 to StringGridChannels.RowCount do
-      StringGridChannels.Cells[x-1, y-1] := ChannelsSrc[y, x];
-
-  ShowMessage(intToStr(DaysBetween(Now, FormatingDateTime(StringGridChannels.Cells[5,3]))));
+    end;
 
 
+    for a := 0 to j-1 do s:=s+ChannelsResult[a,0]+' | '+ChannelsResult[a,1]+' | '+ChannelsResult[a,2]+sLineBreak;
+
+    ShowMessage(s);
+
+
+    ChannelsResult:=NIL;
 end;
 
 

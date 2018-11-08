@@ -25,6 +25,7 @@ object MainForm: TMainForm
     Height = 57
     Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
     TabOrder = 0
+    OnClick = BtnConfClick
   end
   object BtnSend: TButton
     Left = 89
@@ -34,12 +35,5 @@ object MainForm: TMainForm
     Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100
     TabOrder = 1
     OnClick = BtnSendClick
-  end
-  object StringGridChannels: TStringGrid
-    Left = 0
-    Top = 0
-    Width = 200
-    Height = 60
-    TabOrder = 2
   end
 end

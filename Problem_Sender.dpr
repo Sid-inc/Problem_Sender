@@ -2,7 +2,8 @@ program Problem_Sender;
 
 uses
   Vcl.Forms,
-  main in 'main.pas' {MainForm};
+  main in 'main.pas' {MainForm},
+  config in 'config.pas' {ConfigForm};
 
 {$R *.res}
 

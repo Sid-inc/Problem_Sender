@@ -1,9 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
-  <Transactions>
-    <Transaction>2018.11.07 20:16:25.083,=C:\Users\Sid\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
-    <Transaction>2018.11.07 20:17:04.681,E:\Develop\Delphi\Problem_Sender\main.dfm=C:\Users\Sid\Documents\Embarcadero\Studio\Projects\Unit1.dfm</Transaction>
-    <Transaction>2018.11.07 20:17:04.681,E:\Develop\Delphi\Problem_Sender\main.pas=C:\Users\Sid\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
-    <Transaction>2018.11.07 20:17:19.999,E:\Develop\Delphi\Problem_Sender\Problem_Sender.dproj=C:\Users\Sid\Documents\Embarcadero\Studio\Projects\Project1.dproj</Transaction>
+	<Transactions>
+    <Transaction>1899.12.30 00:00:00.000.681,C:\Users\Sid\Documents\Embarcadero\Studio\Projects\Unit1.dfm=E:\Develop\Delphi\Problem_Sender\main.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.083,=C:\Users\Sid\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.681,C:\Users\Sid\Documents\Embarcadero\Studio\Projects\Unit1.pas=E:\Develop\Delphi\Problem_Sender\main.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.999,C:\Users\Sid\Documents\Embarcadero\Studio\Projects\Project1.dproj=E:\Develop\Delphi\Problem_Sender\Problem_Sender.dproj</Transaction>
+    <Transaction>2018.11.08 21:59:21.934,=E:\Develop\Delphi\Problem_Sender\Unit1.pas</Transaction>
+    <Transaction>2018.11.08 21:59:51.345,E:\Develop\Delphi\Problem_Sender\config.dfm=E:\Develop\Delphi\Problem_Sender\Unit1.dfm</Transaction>
+    <Transaction>2018.11.08 21:59:51.345,E:\Develop\Delphi\Problem_Sender\config.pas=E:\Develop\Delphi\Problem_Sender\Unit1.pas</Transaction>
+    <Transaction>2018.11.08 21:59:56.712,E:\Develop\Delphi\Problem_Sender\Problem_Sender.dproj=E:\Develop\Delphi\Problem_Sender\Problem_Sender.dproj</Transaction>
   </Transactions>
 </BorlandProject>
