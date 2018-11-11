@@ -4,15 +4,21 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, ComObj, Vcl.Grids, DateUtils;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, ComObj, Vcl.Grids, DateUtils, inifiles,
+  IdAntiFreezeBase, Vcl.IdAntiFreeze, IdBaseComponent, IdComponent,
+  IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient,
+  IdSMTPBase, IdSMTP, IdMessage;
 
 type
   TMainForm = class(TForm)
     BtnConf: TButton;
     BtnSend: TButton;
+    IdSMTP: TIdSMTP;
+    IdMessage: TIdMessage;
     procedure BtnSendClick(Sender: TObject);
     function FormatingDateTime(s: string): TDateTime;
     procedure BtnConfClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -21,6 +27,15 @@ type
 
 var
   MainForm: TMainForm;
+  ChanelsFile: string; // Имя файла выгрузки каналов
+  Mail_server: string; // Имя почтового сервера
+  Mail_port: string; // Порт почтового сервера
+  User_name: string; // Имя пользователя
+  Password: string; // Пароль
+  Theme: string; // Тема письма
+  Senders_address: string; // Адрес отправителя
+  Senders_name: string; // Имя отпарвителя
+  Recipient_address: string; // Адрес получателя
 
 implementation
 
@@ -53,7 +68,7 @@ begin
   ExcelApp := CreateOleObject('Excel.Application');
 
   // открытие книги Excel
-  ExcelApp.Workbooks.Open('E:\Develop\Delphi\onlineoo_export_OMG_smolensk-3.XLS');
+  ExcelApp.Workbooks.Open(ChanelsFile);
 
   // открытие листа книги
   ExcelSheet := ExcelApp.Workbooks[1].WorkSheets[1];
@@ -94,8 +109,41 @@ begin
 
     ShowMessage(s);
 
-
     ChannelsResult:=NIL;
+
+    // Отправка письма
+
+    //выбираем SMTP сервер.
+    IdSMTP.Host:= Mail_server;
+    //порт
+    IdSMTP.Port:= StrToInt(Mail_port);
+    //логин (для некоторых необходимо писать с доменом).
+    IdSMTP.Username:= User_name;
+    //пароль от почты.
+    IdSMTP.Password:= Password;
+
+
+    //Тема письма.
+    IdMessage.Subject:= Theme;
+    //Адрес получателя.
+    IdMessage.Recipients.EMailAddresses:= Recipient_address;
+    //ваш email с которого идёт отправка.
+    IdMessage.From.Address:= Senders_address;
+    //Текст который вы ходите послать.
+    IdMessage.Body.Text:= 'Пр<b>и</b>вет<br /> привет' ;
+    //Электронная подпись (Имя).
+    IdMessage.From.Name:= Senders_name;
+    // Для рус. языка
+    IdMessage.ContentType:='text/html; charset=windows-1251';
+    IdMessage.ContentTransferEncoding:='8bit';
+    //соединяемся
+    IdSMTP.connect;
+    //отправляем
+    if idSmtp.Connected = TRUE then
+      IdSMTP.Send(IdMessage);
+    //отсоединяемся
+    IdSMTP.Disconnect;
+
 end;
 
 
@@ -119,5 +167,27 @@ begin
   result:=StrToDateTime(s2);
 end;
 
+
+procedure TMainForm.FormCreate(Sender: TObject);
+var
+  Ini: Tinifile;
+begin
+  ChanelsFile := '';
+  if FileExists('config.ini') then
+    begin
+      Ini:=TiniFile.Create(extractfilepath(paramstr(0))+'config.ini');
+      ChanelsFile:=Ini.ReadString('Chanels','File_name','');
+      Mail_server:=Ini.ReadString('Mail','ServerAddress','');
+      Mail_port:=Ini.ReadString('Mail','ServerPort','');
+      User_name:=Ini.ReadString('Mail','UserName','');
+      Password:=Ini.ReadString('Mail','UserPassword','');
+      Theme:=Ini.ReadString('Mail','Theme','');
+      Senders_address:=Ini.ReadString('Mail','SenderAddress','');
+      Senders_name:=Ini.ReadString('Mail','SenderName','');
+      Recipient_address:=Ini.ReadString('Mail','RecipientAddress','');
+      Ini.Free;
+    end;
+
+end;
 
 end.

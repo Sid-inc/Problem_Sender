@@ -16,6 +16,7 @@ object MainForm: TMainForm
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object BtnConf: TButton
@@ -35,5 +36,21 @@ object MainForm: TMainForm
     Caption = #1054#1090#1087#1088#1072#1074#1080#1090#1100
     TabOrder = 1
     OnClick = BtnSendClick
+  end
+  object IdSMTP: TIdSMTP
+    SASLMechanisms = <>
+  end
+  object IdMessage: TIdMessage
+    AttachmentEncoding = 'MIME'
+    BccList = <>
+    CCList = <>
+    Encoding = meDefault
+    FromList = <
+      item
+      end>
+    Recipients = <>
+    ReplyTo = <>
+    ConvertPreamble = True
+    Left = 24
   end
 end
