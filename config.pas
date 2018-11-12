@@ -24,14 +24,16 @@ type
     UserNameEdit: TEdit;
     PasswordLabel: TLabel;
     PasswordEdit: TMaskEdit;
-    ThemeLabel: TLabel;
-    ThemeEdit: TEdit;
     SenderAddressLabel: TLabel;
     SenderAddressEdit: TEdit;
     SenderNameLabel: TLabel;
     SenderNameEdit: TEdit;
+    ThemeLabel: TLabel;
+    ThemeEdit: TEdit;
     RecipientAddressLabel: TLabel;
     RecipientAddressEdit: TEdit;
+    DaysLabel: TLabel;
+    DaysEdit: TEdit;
     procedure CloseBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure SaveClick(Sender: TObject);
@@ -63,14 +65,15 @@ begin
     begin
       Ini:=TiniFile.Create(extractfilepath(paramstr(0))+'config.ini');
       FileNameEdit.Text:=Ini.ReadString('Chanels','File_name','');
+      ThemeEdit.Text:=Ini.ReadString('Chanels','Theme','');
+      RecipientAddressEdit.Text:=Ini.ReadString('Chanels','RecipientAddress','');
+      DaysEdit.Text:=Ini.ReadString('Chanels','ChanelsDays','');
       ServerAddressEdit.Text:=Ini.ReadString('Mail','ServerAddress','');
       PortEdit.Text:=Ini.ReadString('Mail','ServerPort','');
       UserNameEdit.Text:=Ini.ReadString('Mail','UserName','');
       PasswordEdit.Text:=Ini.ReadString('Mail','UserPassword','');
-      ThemeEdit.Text:=Ini.ReadString('Mail','Theme','');
       SenderAddressEdit.Text:=Ini.ReadString('Mail','SenderAddress','');
       SenderNameEdit.Text:=Ini.ReadString('Mail','SenderName','');
-      RecipientAddressEdit.Text:=Ini.ReadString('Mail','RecipientAddress','');
       Ini.Free;
     end;
 end;
@@ -84,6 +87,21 @@ begin
     begin
       Ini.WriteString('Chanels','File_name',FileNameEdit.Text);
       main.ChanelsFile := FileNameEdit.Text;
+    end;
+  if ThemeEdit.Text <> '' then
+    begin
+      Ini.WriteString('Chanels','Theme',ThemeEdit.Text);
+      main.Theme := ThemeEdit.Text;
+    end;
+  if RecipientAddressEdit.Text <> '' then
+    begin
+      Ini.WriteString('Chanels','RecipientAddress',RecipientAddressEdit.Text);
+      main.Recipient_address := RecipientAddressEdit.Text;
+    end;
+  if DaysEdit.Text <> '' then
+    begin
+      Ini.WriteString('Chanels','ChanelsDays',DaysEdit.Text);
+      main.ChanelsDays := DaysEdit.Text;
     end;
   if ServerAddressEdit.Text <> '' then
     begin
@@ -105,11 +123,7 @@ begin
       Ini.WriteString('Mail','UserPassword',PasswordEdit.Text);
       main.Password := PasswordEdit.Text;
     end;
-  if ThemeEdit.Text <> '' then
-    begin
-      Ini.WriteString('Mail','Theme',ThemeEdit.Text);
-      main.Theme := ThemeEdit.Text;
-    end;
+
   if SenderAddressEdit.Text <> '' then
     begin
       Ini.WriteString('Mail','SenderAddress',SenderAddressEdit.Text);
@@ -119,11 +133,6 @@ begin
     begin
       Ini.WriteString('Mail','SenderName',SenderNameEdit.Text);
       main.Senders_name := SenderNameEdit.Text;
-    end;
-  if RecipientAddressEdit.Text <> '' then
-    begin
-      Ini.WriteString('Mail','RecipientAddress',RecipientAddressEdit.Text);
-      main.Recipient_address := RecipientAddressEdit.Text;
     end;
   Ini.Free;
 end;

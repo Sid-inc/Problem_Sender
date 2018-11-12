@@ -24,10 +24,12 @@ object ConfigForm: TConfigForm
     Top = 8
     Width = 417
     Height = 249
-    ActivePage = Mail_Conf
+    ActivePage = Channels_Conf
     TabOrder = 0
     object Channels_Conf: TTabSheet
       Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1082#1072#1085#1072#1083#1086#1074
+      ExplicitLeft = 0
+      ExplicitTop = 26
       object FileNameLabel: TLabel
         Left = 16
         Top = 16
@@ -35,12 +37,54 @@ object ConfigForm: TConfigForm
         Height = 13
         Caption = #1048#1084#1103' '#1092#1072#1081#1083#1072' '#1074#1099#1075#1088#1091#1079#1082#1080' TMSONG:'
       end
+      object ThemeLabel: TLabel
+        Left = 16
+        Top = 79
+        Width = 66
+        Height = 13
+        Caption = #1058#1077#1084#1072' '#1087#1080#1089#1100#1084#1072':'
+      end
+      object RecipientAddressLabel: TLabel
+        Left = 16
+        Top = 112
+        Width = 98
+        Height = 13
+        Caption = #1040#1076#1088#1077#1089' '#1087#1086#1083#1091#1095#1072#1090#1077#1083#1103':'
+      end
+      object DaysLabel: TLabel
+        Left = 16
+        Top = 48
+        Width = 339
+        Height = 13
+        Caption = #1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1076#1085#1077#1081' '#1086#1090#1082#1083#1102#1095#1077#1085#1080#1103' '#1082#1072#1085#1072#1083#1072' '#1076#1083#1103' '#1074#1082#1083#1102#1095#1077#1085#1080#1103' '#1074' '#1074#1099#1075#1088#1091#1079#1082#1091':'
+      end
       object FileNameEdit: TEdit
         Left = 176
         Top = 13
         Width = 217
         Height = 21
         TabOrder = 0
+      end
+      object ThemeEdit: TEdit
+        Left = 88
+        Top = 76
+        Width = 305
+        Height = 21
+        TabOrder = 1
+      end
+      object RecipientAddressEdit: TEdit
+        Left = 120
+        Top = 109
+        Width = 273
+        Height = 21
+        TabOrder = 2
+      end
+      object DaysEdit: TEdit
+        Left = 361
+        Top = 45
+        Width = 32
+        Height = 21
+        TabOrder = 3
       end
     end
     object Mail_Conf: TTabSheet
@@ -74,33 +118,19 @@ object ConfigForm: TConfigForm
         Height = 13
         Caption = #1055#1072#1088#1086#1083#1100':'
       end
-      object ThemeLabel: TLabel
-        Left = 11
-        Top = 71
-        Width = 66
-        Height = 13
-        Caption = #1058#1077#1084#1072' '#1087#1080#1089#1100#1084#1072':'
-      end
       object SenderAddressLabel: TLabel
         Left = 11
-        Top = 104
+        Top = 71
         Width = 104
         Height = 13
         Caption = #1040#1076#1088#1077#1089' '#1086#1090#1087#1088#1072#1074#1080#1090#1077#1083#1103':'
       end
       object SenderNameLabel: TLabel
         Left = 11
-        Top = 136
+        Top = 101
         Width = 92
         Height = 13
         Caption = #1048#1084#1103' '#1086#1090#1087#1088#1072#1074#1080#1090#1077#1083#1103':'
-      end
-      object RecipientAddressLabel: TLabel
-        Left = 11
-        Top = 168
-        Width = 98
-        Height = 13
-        Caption = #1040#1076#1088#1077#1089' '#1087#1086#1083#1091#1095#1072#1090#1077#1083#1103':'
       end
       object ServerAddressEdit: TEdit
         Left = 96
@@ -131,33 +161,19 @@ object ConfigForm: TConfigForm
         TabOrder = 3
         Text = ''
       end
-      object ThemeEdit: TEdit
-        Left = 83
+      object SenderAddressEdit: TEdit
+        Left = 121
         Top = 68
-        Width = 314
+        Width = 276
         Height = 21
         TabOrder = 4
       end
-      object SenderAddressEdit: TEdit
-        Left = 121
-        Top = 101
-        Width = 276
-        Height = 21
-        TabOrder = 5
-      end
       object SenderNameEdit: TEdit
         Left = 109
-        Top = 133
+        Top = 98
         Width = 288
         Height = 21
-        TabOrder = 6
-      end
-      object RecipientAddressEdit: TEdit
-        Left = 115
-        Top = 165
-        Width = 282
-        Height = 21
-        TabOrder = 7
+        TabOrder = 5
       end
     end
   end

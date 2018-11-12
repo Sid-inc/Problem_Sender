@@ -41,7 +41,7 @@ object MainForm: TMainForm
     SASLMechanisms = <>
   end
   object IdMessage: TIdMessage
-    AttachmentEncoding = 'MIME'
+    AttachmentEncoding = 'UUE'
     BccList = <>
     CCList = <>
     Encoding = meDefault

@@ -36,6 +36,7 @@ var
   Senders_address: string; // Адрес отправителя
   Senders_name: string; // Имя отпарвителя
   Recipient_address: string; // Адрес получателя
+  ChanelsDays: string; // Количество дней считаемых проблемными
 
 implementation
 
@@ -58,10 +59,9 @@ var
   ChannelsSrc: Variant;
   ChannelsResult: array of array of string;
   x, y: Integer;
-  a, i, j, N: Integer;
-  s: string;
+  a, i, j: Integer;
+  s: String;
 begin
-  N:=1;
   a:=1;
   s:='';
   // создание OLE-объекта Excel
@@ -93,7 +93,7 @@ begin
   for i := 2 to x do
     begin
       if ChannelsSrc[i,4] = 'OFF' then
-        if DaysBetween(Now, FormatingDateTime(ChannelsSrc[i,6])) >= N then
+        if DaysBetween(Now, FormatingDateTime(ChannelsSrc[i,6])) >= strtoint(ChanelsDays) then
           begin
             ChannelsResult[j,0]:=ChannelsSrc[i,1];
             if ChannelsSrc[i,3] = 'M' then ChannelsResult[j,1]:='Основной канал';
@@ -105,13 +105,21 @@ begin
     end;
 
 
-    for a := 0 to j-1 do s:=s+ChannelsResult[a,0]+' | '+ChannelsResult[a,1]+' | '+ChannelsResult[a,2]+sLineBreak;
 
-    ShowMessage(s);
-
-    ChannelsResult:=NIL;
 
     // Отправка письма
+
+    //Формируем письмо
+    s:='<table border="1"><tr><th><b>Название ОО</b></th><th><b>Тип канала</b></th><th><b>Количество дней не в сети</b></th></tr>';
+    for a := 0 to j-1 do
+      begin
+        s:=s+'<tr>';
+        s:=s+'<td>'+ChannelsResult[a,0]+'</td><td>'+ChannelsResult[a,1]+'</td><td>'+ChannelsResult[a,2]+'</td>';
+        s:=s+'</tr>';
+      end;
+    s:=s+'</table>';
+
+    ChannelsResult:=NIL;
 
     //выбираем SMTP сервер.
     IdSMTP.Host:= Mail_server;
@@ -122,15 +130,14 @@ begin
     //пароль от почты.
     IdSMTP.Password:= Password;
 
-
     //Тема письма.
     IdMessage.Subject:= Theme;
     //Адрес получателя.
     IdMessage.Recipients.EMailAddresses:= Recipient_address;
     //ваш email с которого идёт отправка.
     IdMessage.From.Address:= Senders_address;
-    //Текст который вы ходите послать.
-    IdMessage.Body.Text:= 'Пр<b>и</b>вет<br /> привет' ;
+    //Вставляем текст письма
+    IdMessage.Body.Text:= s;
     //Электронная подпись (Имя).
     IdMessage.From.Name:= Senders_name;
     // Для рус. языка
@@ -177,14 +184,15 @@ begin
     begin
       Ini:=TiniFile.Create(extractfilepath(paramstr(0))+'config.ini');
       ChanelsFile:=Ini.ReadString('Chanels','File_name','');
+      Theme:=Ini.ReadString('Mail','Theme','');
+      Recipient_address:=Ini.ReadString('Mail','RecipientAddress','');
+      ChanelsDays:=Ini.ReadString('Chanels','ChanelsDays','');
       Mail_server:=Ini.ReadString('Mail','ServerAddress','');
       Mail_port:=Ini.ReadString('Mail','ServerPort','');
       User_name:=Ini.ReadString('Mail','UserName','');
       Password:=Ini.ReadString('Mail','UserPassword','');
-      Theme:=Ini.ReadString('Mail','Theme','');
       Senders_address:=Ini.ReadString('Mail','SenderAddress','');
       Senders_name:=Ini.ReadString('Mail','SenderName','');
-      Recipient_address:=Ini.ReadString('Mail','RecipientAddress','');
       Ini.Free;
     end;
 
