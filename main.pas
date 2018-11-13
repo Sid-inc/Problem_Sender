@@ -19,6 +19,7 @@ type
     function FormatingDateTime(s: string): TDateTime;
     procedure BtnConfClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    function Send_Email(Theme, Recipient, Email_Message: string): Boolean;
   private
     { Private declarations }
   public
@@ -62,7 +63,6 @@ var
   a, i, j: Integer;
   s: String;
 begin
-  a:=1;
   s:='';
   // создание OLE-объекта Excel
   ExcelApp := CreateOleObject('Excel.Application');
@@ -104,12 +104,8 @@ begin
 
     end;
 
-
-
-
     // Отправка письма
-
-    //Формируем письмо
+    // Формируем письмо
     s:='<table border="1"><tr><th><b>Название ОО</b></th><th><b>Тип канала</b></th><th><b>Количество дней не в сети</b></th></tr>';
     for a := 0 to j-1 do
       begin
@@ -118,38 +114,9 @@ begin
         s:=s+'</tr>';
       end;
     s:=s+'</table>';
-
     ChannelsResult:=NIL;
-
-    //выбираем SMTP сервер.
-    IdSMTP.Host:= Mail_server;
-    //порт
-    IdSMTP.Port:= StrToInt(Mail_port);
-    //логин (для некоторых необходимо писать с доменом).
-    IdSMTP.Username:= User_name;
-    //пароль от почты.
-    IdSMTP.Password:= Password;
-
-    //Тема письма.
-    IdMessage.Subject:= Theme;
-    //Адрес получателя.
-    IdMessage.Recipients.EMailAddresses:= Recipient_address;
-    //ваш email с которого идёт отправка.
-    IdMessage.From.Address:= Senders_address;
-    //Вставляем текст письма
-    IdMessage.Body.Text:= s;
-    //Электронная подпись (Имя).
-    IdMessage.From.Name:= Senders_name;
-    // Для рус. языка
-    IdMessage.ContentType:='text/html; charset=windows-1251';
-    IdMessage.ContentTransferEncoding:='8bit';
-    //соединяемся
-    IdSMTP.connect;
-    //отправляем
-    if idSmtp.Connected = TRUE then
-      IdSMTP.Send(IdMessage);
-    //отсоединяемся
-    IdSMTP.Disconnect;
+    if (Send_Email(Theme, Recipient_address, s)) then ShowMessage('Письмо по каналам - ОК')
+      else ShowMessage('Письмо по каналам - ERROR');
 
 end;
 
@@ -196,6 +163,43 @@ begin
       Ini.Free;
     end;
 
+end;
+
+function TMainForm.Send_Email(Theme, Recipient, Email_Message: string): Boolean;
+begin
+  try
+    //выбираем SMTP сервер.
+    IdSMTP.Host:= Mail_server;
+    //порт
+    IdSMTP.Port:= StrToInt(Mail_port);
+    //логин (для некоторых необходимо писать с доменом).
+    IdSMTP.Username:= User_name;
+    //пароль от почты.
+    IdSMTP.Password:= Password;
+    //Тема письма.
+    IdMessage.Subject:= Theme;
+    //Адрес получателя.
+    IdMessage.Recipients.EMailAddresses:= Recipient;
+    //ваш email с которого идёт отправка.
+    IdMessage.From.Address:= Senders_address;
+    //Вставляем текст письма
+    IdMessage.Body.Text:= Email_Message;
+    //Электронная подпись (Имя).
+    IdMessage.From.Name:= Senders_name;
+    // Для рус. языка
+    IdMessage.ContentType:='text/html; charset=windows-1251';
+    IdMessage.ContentTransferEncoding:='8bit';
+    //соединяемся
+    IdSMTP.connect;
+    //отправляем
+    if idSmtp.Connected = TRUE then
+      IdSMTP.Send(IdMessage);
+    //отсоединяемся
+    IdSMTP.Disconnect;
+    result:=true;
+  except
+    result:=false;
+  end;
 end;
 
 end.

@@ -3,7 +3,7 @@ object MainForm: TMainForm
   Top = 0
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
-  BorderIcons = [biSystemMenu, biMinimize]
+  BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Problem Sender'
   ClientHeight = 71
