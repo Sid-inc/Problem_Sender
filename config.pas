@@ -34,6 +34,7 @@ type
     RecipientAddressEdit: TEdit;
     DaysLabel: TLabel;
     DaysEdit: TEdit;
+    SSLCheckBox: TCheckBox;
     procedure CloseBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure SaveClick(Sender: TObject);

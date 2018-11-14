@@ -28,8 +28,6 @@ object ConfigForm: TConfigForm
     TabOrder = 0
     object Channels_Conf: TTabSheet
       Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1082#1072#1085#1072#1083#1086#1074
-      ExplicitLeft = 0
-      ExplicitTop = 26
       object FileNameLabel: TLabel
         Left = 16
         Top = 16
@@ -158,6 +156,7 @@ object ConfigForm: TConfigForm
         Top = 38
         Width = 108
         Height = 21
+        PasswordChar = '*'
         TabOrder = 3
         Text = ''
       end
@@ -174,6 +173,14 @@ object ConfigForm: TConfigForm
         Width = 288
         Height = 21
         TabOrder = 5
+      end
+      object SSLCheckBox: TCheckBox
+        Left = 11
+        Top = 136
+        Width = 97
+        Height = 17
+        Caption = 'SSL Try'
+        TabOrder = 6
       end
     end
   end

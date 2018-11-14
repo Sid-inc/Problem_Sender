@@ -7,7 +7,8 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, ComObj, Vcl.Grids, DateUtils, inifiles,
   IdAntiFreezeBase, Vcl.IdAntiFreeze, IdBaseComponent, IdComponent,
   IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient,
-  IdSMTPBase, IdSMTP, IdMessage;
+  IdSMTPBase, IdSMTP, IdMessage, IdIOHandler, IdIOHandlerStack, IdSSL, IdSSLOpenSSL, IdCustomTransparentProxy, IdSocks,
+  IdHTTP, idAttachment, IdAttachmentFile, IdIOHandlerSocket;
 
 type
   TMainForm = class(TForm)
@@ -15,6 +16,8 @@ type
     BtnSend: TButton;
     IdSMTP: TIdSMTP;
     IdMessage: TIdMessage;
+    IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL;
+    IdHTTP1: TIdHTTP;
     procedure BtnSendClick(Sender: TObject);
     function FormatingDateTime(s: string): TDateTime;
     procedure BtnConfClick(Sender: TObject);
@@ -166,12 +169,30 @@ begin
 end;
 
 function TMainForm.Send_Email(Theme, Recipient, Email_Message: string): Boolean;
+var
+IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
 begin
   try
     //выбираем SMTP сервер.
     IdSMTP.Host:= Mail_server;
     //порт
     IdSMTP.Port:= StrToInt(Mail_port);
+
+    if ConfigForm.SSLCheckBox.Checked then   //Если нужно использовать SSL
+      begin
+        IdSMTP.AuthType:=satDefault;
+        IdSSLIOHandlerSocketOpenSSL:= TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+        IdSSLIOHandlerSocketOpenSSL.Destination := IdSMTP.Host+':'+IntToStr(IdSMTP.Port);
+        IdSSLIOHandlerSocketOpenSSL.Host := IdSMTP.Host;
+        IdSSLIOHandlerSocketOpenSSL.Port := IdSMTP.Port;
+        IdSSLIOHandlerSocketOpenSSL.DefaultPort := 0;
+        IdSSLIOHandlerSocketOpenSSL.SSLOptions.Method := sslvTLSv1;
+        //IdSSLIOHandlerSocketOpenSSL.SSLOptions.Method := sslvSSLv2;
+        IdSSLIOHandlerSocketOpenSSL.SSLOptions.Mode := sslmUnassigned;
+        IdSMTP.IOHandler := IdSSLIOHandlerSocketOpenSSL;
+        IdSMTP.UseTLS := utUseImplicitTLS;
+      end;
+
     //логин (для некоторых необходимо писать с доменом).
     IdSMTP.Username:= User_name;
     //пароль от почты.
@@ -200,6 +221,7 @@ begin
   except
     result:=false;
   end;
+  IdSMTP.Free;
 end;
 
 end.
