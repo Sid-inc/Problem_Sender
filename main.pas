@@ -66,7 +66,7 @@ var
   a, i, j: Integer;
   s: String;
 begin
-  s:='';
+//  s:='';
   // создание OLE-объекта Excel
   ExcelApp := CreateOleObject('Excel.Application');
 
@@ -172,7 +172,7 @@ function TMainForm.Send_Email(Theme, Recipient, Email_Message: string): Boolean;
 var
 IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
 begin
-  try
+//  try
     //выбираем SMTP сервер.
     IdSMTP.Host:= Mail_server;
     //порт
@@ -218,9 +218,9 @@ begin
     //отсоединяемся
     IdSMTP.Disconnect;
     result:=true;
-  except
-    result:=false;
-  end;
+//  except
+//    result:=false;
+//  end;
   IdSMTP.Free;
 end;
 
