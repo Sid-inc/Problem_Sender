@@ -66,7 +66,7 @@ var
   a, i, j: Integer;
   s: String;
 begin
-  s:='';
+//  s:='';
   // создание OLE-объекта Excel
   ExcelApp := CreateOleObject('Excel.Application');
 
@@ -170,15 +170,15 @@ end;
 
 function TMainForm.Send_Email(Theme, Recipient, Email_Message: string): Boolean;
 var
-attach:TidAttachment;
-attach2:TidAttachment;
-msg:TIdMessage;
-FileDir:string;
-att:TIdAttachmentFile;
 IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
 begin
 //  try
-    if ConfigForm.SSLCheckBox.Checked then
+    //выбираем SMTP сервер.
+    IdSMTP.Host:= Mail_server;
+    //порт
+    IdSMTP.Port:= StrToInt(Mail_port);
+
+    if ConfigForm.SSLCheckBox.Checked then   //≈сли нужно использовать SSL
       begin
         IdSMTP.AuthType:=satDefault;
         IdSSLIOHandlerSocketOpenSSL:= TIdSSLIOHandlerSocketOpenSSL.Create(nil);
@@ -186,20 +186,12 @@ begin
         IdSSLIOHandlerSocketOpenSSL.Host := IdSMTP.Host;
         IdSSLIOHandlerSocketOpenSSL.Port := IdSMTP.Port;
         IdSSLIOHandlerSocketOpenSSL.DefaultPort := 0;
-        IdSSLIOHandlerSocketOpenSSL.SSLOptions.Method := sslvTLSv1;
-        //IdSSLIOHandlerSocketOpenSSL.SSLOptions.Method := sslvSSLv2;
+        IdSSLIOHandlerSocketOpenSSL.SSLOptions.Method := sslvTLSv1_2;
         IdSSLIOHandlerSocketOpenSSL.SSLOptions.Mode := sslmUnassigned;
         IdSMTP.IOHandler := IdSSLIOHandlerSocketOpenSSL;
         IdSMTP.UseTLS := utUseImplicitTLS;
-        FileDir:=ExtractFilePath(Application.ExeName)+'file.txt';
-        IdMessage.IsEncoded:=true;
-        att:=TIdAttachmentfile.Create(IdMessage.MessageParts,FileDir);
       end;
 
-    //выбираем SMTP сервер.
-    IdSMTP.Host:= Mail_server;
-    //порт
-    IdSMTP.Port:= StrToInt(Mail_port);
     //логин (дл€ некоторых необходимо писать с доменом).
     IdSMTP.Username:= User_name;
     //пароль от почты.

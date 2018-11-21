@@ -62,8 +62,8 @@ var
   ExcelApp, ExcelSheet: OLEVariant;
   ChannelsSrc: Variant;
   ChannelsResult: array of array of string;
-  x, y: Integer;
-  a, i, j: Integer;
+  a, i, j, x, y, sr1, sr2: Integer;
+  tmparr: array [1..3] of string;
   s: String;
 begin
 //  s:='';
@@ -106,20 +106,39 @@ begin
           end;
 
     end;
-
-    // Отправка письма
-    // Формируем письмо
-    s:='<table border="1"><tr><th><b>Название ОО</b></th><th><b>Тип канала</b></th><th><b>Количество дней не в сети</b></th></tr>';
-    for a := 0 to j-1 do
-      begin
-        s:=s+'<tr>';
-        s:=s+'<td>'+ChannelsResult[a,0]+'</td><td>'+ChannelsResult[a,1]+'</td><td>'+ChannelsResult[a,2]+'</td>';
-        s:=s+'</tr>';
-      end;
-    s:=s+'</table>';
-    ChannelsResult:=NIL;
-    if (Send_Email(Theme, Recipient_address, s)) then ShowMessage('Письмо по каналам - ОК')
-      else ShowMessage('Письмо по каналам - ERROR');
+   if j<>0 then
+    begin
+      // Сортировка массива по убыванию по количеству дней не в сети
+      if j>0 then
+       for sr1 := 0 to j do
+        for sr2 := 0 to j-sr1 do
+          if ChannelsResult[sr2,2] < ChannelsResult[sr2+1, 2] then
+            begin
+              tmparr[1]:=ChannelsResult[sr2,0];
+              tmparr[2]:=ChannelsResult[sr2,1];
+              tmparr[3]:=ChannelsResult[sr2,2];
+              ChannelsResult[sr2,0]:=ChannelsResult[sr2+1,0];
+              ChannelsResult[sr2,1]:=ChannelsResult[sr2+1,1];
+              ChannelsResult[sr2,2]:=ChannelsResult[sr2+1,2];
+              ChannelsResult[sr2+1, 0]:=tmparr[1];
+              ChannelsResult[sr2+1, 1]:=tmparr[2];
+              ChannelsResult[sr2+1, 2]:=tmparr[3];
+            end;
+      // Отправка письма
+      // Формируем письмо
+      s:='<table border="1"><tr><th><b>Название ОО</b></th><th><b>Тип канала</b></th><th><b>Количество дней не в сети</b></th></tr>';
+      for a := 0 to j-1 do
+        begin
+          s:=s+'<tr>';
+          s:=s+'<td>'+ChannelsResult[a,0]+'</td><td>'+ChannelsResult[a,1]+'</td><td>'+ChannelsResult[a,2]+'</td>';
+          s:=s+'</tr>'+sLineBreak;
+        end;
+      s:=s+'</table>';
+      ChannelsResult:=NIL;
+      if (Send_Email(Theme, Recipient_address, s)) then ShowMessage('Письмо по каналам - ОК')
+        else ShowMessage('Письмо по каналам - ERROR');
+    end
+    else ShowMessage('Отправлять нечего, нет каналов для текущих условий отбора');
 
 end;
 
@@ -186,8 +205,8 @@ begin
         IdSSLIOHandlerSocketOpenSSL.Host := IdSMTP.Host;
         IdSSLIOHandlerSocketOpenSSL.Port := IdSMTP.Port;
         IdSSLIOHandlerSocketOpenSSL.DefaultPort := 0;
-        IdSSLIOHandlerSocketOpenSSL.SSLOptions.Method := sslvTLSv1;
-        //IdSSLIOHandlerSocketOpenSSL.SSLOptions.Method := sslvSSLv2;
+        IdSSLIOHandlerSocketOpenSSL.SSLOptions.Method := sslvTLSv1_2;
+        IdSSLIOHandlerSocketOpenSSL.SSLOptions.SSLVersions := [sslvSSLv3];
         IdSSLIOHandlerSocketOpenSSL.SSLOptions.Mode := sslmUnassigned;
         IdSMTP.IOHandler := IdSSLIOHandlerSocketOpenSSL;
         IdSMTP.UseTLS := utUseImplicitTLS;
