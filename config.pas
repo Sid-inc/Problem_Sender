@@ -72,7 +72,7 @@ begin
       ServerAddressEdit.Text:=Ini.ReadString('Mail','ServerAddress','');
       PortEdit.Text:=Ini.ReadString('Mail','ServerPort','');
       UserNameEdit.Text:=Ini.ReadString('Mail','UserName','');
-      PasswordEdit.Text:=Ini.ReadString('Mail','UserPassword','');
+      PasswordEdit.Text:=main.Cryptor(Ini.ReadString('Mail','UserPassword',''), 'decrypt');
       SenderAddressEdit.Text:=Ini.ReadString('Mail','SenderAddress','');
       SenderNameEdit.Text:=Ini.ReadString('Mail','SenderName','');
       Ini.Free;
@@ -121,7 +121,7 @@ begin
     end;
   if PasswordEdit.Text <> '' then
     begin
-      Ini.WriteString('Mail','UserPassword',PasswordEdit.Text);
+      Ini.WriteString('Mail','UserPassword', main.Cryptor(PasswordEdit.Text, 'crypt'));
       main.Password := PasswordEdit.Text;
     end;
 

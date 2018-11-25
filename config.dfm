@@ -88,6 +88,10 @@ object ConfigForm: TConfigForm
     object Mail_Conf: TTabSheet
       Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1087#1086#1095#1090#1099
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object ServerAddressLabel: TLabel
         Left = 11
         Top = 11

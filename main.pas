@@ -29,6 +29,8 @@ type
     { Public declarations }
   end;
 
+function Cryptor(s, c: string):string;
+
 var
   MainForm: TMainForm;
   ChanelsFile: string; // Имя файла выгрузки каналов
@@ -143,6 +145,31 @@ begin
 end;
 
 
+function Cryptor(s, c: string): string;
+var
+  I, AddKey, StartKey: Integer;
+begin
+StartKey := 744;
+AddKey := 5;
+Result := '';
+//Шифрование
+if c = 'crypt' then
+  for I := 1 to Length(s) do
+    begin
+      if AddKey > 9 then AddKey:=5;
+      Result := Result + CHAR(Byte(s[I]) xor (StartKey shr AddKey));
+      AddKey:=AddKey+1;
+    end;
+// Дешифрование
+if c = 'decrypt' then
+  for I := 1 to Length(s) do
+    begin
+      if AddKey > 9 then AddKey:=5;
+      Result := Result + CHAR(Byte(s[I]) xor (StartKey shr AddKey));
+      AddKey:=AddKey+1;
+    end;
+end;
+
 function TMainForm.FormatingDateTime(s: string): TDateTime;
 var s2: string;
 x: integer;
@@ -173,13 +200,13 @@ begin
     begin
       Ini:=TiniFile.Create(extractfilepath(paramstr(0))+'config.ini');
       ChanelsFile:=Ini.ReadString('Chanels','File_name','');
-      Theme:=Ini.ReadString('Mail','Theme','');
-      Recipient_address:=Ini.ReadString('Mail','RecipientAddress','');
+      Theme:=Ini.ReadString('Chanels','Theme','');
+      Recipient_address:=Ini.ReadString('Chanels','RecipientAddress','');
       ChanelsDays:=Ini.ReadString('Chanels','ChanelsDays','');
       Mail_server:=Ini.ReadString('Mail','ServerAddress','');
       Mail_port:=Ini.ReadString('Mail','ServerPort','');
       User_name:=Ini.ReadString('Mail','UserName','');
-      Password:=Ini.ReadString('Mail','UserPassword','');
+      Password:=Cryptor(Ini.ReadString('Mail','UserPassword',''), 'decrypt');
       Senders_address:=Ini.ReadString('Mail','SenderAddress','');
       Senders_name:=Ini.ReadString('Mail','SenderName','');
       Ini.Free;
