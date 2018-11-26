@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls, inifiles,
-  Vcl.Mask;
+  Vcl.Mask, Vcl.Buttons;
 
 type
   TConfigForm = class(TForm)
@@ -34,10 +34,13 @@ type
     RecipientAddressEdit: TEdit;
     DaysLabel: TLabel;
     DaysEdit: TEdit;
-    SSLCheckBox: TCheckBox;
+    OpenDialog: TOpenDialog;
+    OpenBtn: TBitBtn;
     procedure CloseBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure SaveClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure OpenBtnClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -52,6 +55,11 @@ implementation
 {$R *.dfm}
 
 uses main;
+
+procedure TConfigForm.Button1Click(Sender: TObject);
+begin
+ShowMessage(main.ChanelsFile+sLineBreak+main.Theme+sLineBreak+main.Recipient_address+sLineBreak+main.ChanelsDays+sLineBreak+main.Mail_server+sLineBreak+main.Mail_port+sLineBreak+main.User_name+sLineBreak+main.Password+sLineBreak+main.Senders_address+sLineBreak+main.Senders_name);
+end;
 
 procedure TConfigForm.CloseBtnClick(Sender: TObject);
 begin
@@ -77,6 +85,12 @@ begin
       SenderNameEdit.Text:=Ini.ReadString('Mail','SenderName','');
       Ini.Free;
     end;
+end;
+
+procedure TConfigForm.OpenBtnClick(Sender: TObject);
+begin
+ if OpenDialog.Execute then FileNameEdit.Text:=OpenDialog.FileName;
+
 end;
 
 procedure TConfigForm.SaveClick(Sender: TObject);

@@ -218,12 +218,12 @@ function TMainForm.Send_Email(Theme, Recipient, Email_Message: string): Boolean;
 var
 IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
 begin
-//  try
+  try
     //выбираем SMTP сервер.
     IdSMTP.Host:= Mail_server;
     //порт
     IdSMTP.Port:= StrToInt(Mail_port);
-
+ {
     if ConfigForm.SSLCheckBox.Checked then   //Если нужно использовать SSL
       begin
         IdSMTP.AuthType:=satDefault;
@@ -232,13 +232,12 @@ begin
         IdSSLIOHandlerSocketOpenSSL.Host := IdSMTP.Host;
         IdSSLIOHandlerSocketOpenSSL.Port := IdSMTP.Port;
         IdSSLIOHandlerSocketOpenSSL.DefaultPort := 0;
-        IdSSLIOHandlerSocketOpenSSL.SSLOptions.Method := sslvTLSv1_2;
-        IdSSLIOHandlerSocketOpenSSL.SSLOptions.SSLVersions := [sslvSSLv3];
+        IdSSLIOHandlerSocketOpenSSL.SSLOptions.Method := sslvTLSv1;
         IdSSLIOHandlerSocketOpenSSL.SSLOptions.Mode := sslmUnassigned;
         IdSMTP.IOHandler := IdSSLIOHandlerSocketOpenSSL;
         IdSMTP.UseTLS := utUseImplicitTLS;
       end;
-
+  }
     //логин (для некоторых необходимо писать с доменом).
     IdSMTP.Username:= User_name;
     //пароль от почты.
@@ -264,9 +263,9 @@ begin
     //отсоединяемся
     IdSMTP.Disconnect;
     result:=true;
-//  except
-//    result:=false;
-//  end;
+  except
+    result:=false;
+  end;
   IdSMTP.Free;
 end;
 
