@@ -68,7 +68,74 @@ var
   tmparr: array [1..3] of string;
   s: String;
 begin
-//  s:='';
+
+  if FileExists('config.ini') = false then
+    begin
+      ShowMessage('Не найден файл конфигурации. Нужна настройка.');
+      exit;
+    end;
+
+  if ((ChanelsFile='') or (FileExists(ChanelsFile) = false)) then
+    begin
+      ShowMessage('Не задан путь к файлу либо путь некорретный.');
+      exit;
+    end;
+
+  if Theme='' then
+    begin
+      ShowMessage('Не задана тема письма о каналах связи.');
+      exit;
+    end;
+
+  if Recipient_address='' then
+    begin
+      ShowMessage('Не задан адрес получателя для письма о каналах связи.');
+      exit;
+    end;
+
+  if ChanelsDays='' then
+    begin
+      ShowMessage('Не задано количество дней для включения в отчет.');
+      exit;
+    end;
+
+  if Mail_server='' then
+    begin
+      ShowMessage('Не задан почтовый сервер.');
+      exit;
+    end;
+
+  if Mail_port='' then
+    begin
+      ShowMessage('Не задан порт почтового сервера.');
+      exit;
+    end;
+
+  if User_name='' then
+    begin
+      ShowMessage('Не задано имя пользователя.');
+      exit;
+    end;
+
+  if Password='' then
+    begin
+      ShowMessage('Не задан пароль.');
+      exit;
+    end;
+
+  if Senders_address='' then
+    begin
+      ShowMessage('Не задан адрес отправителя.');
+      exit;
+    end;
+
+  if Senders_name='' then
+    begin
+      ShowMessage('Не задано имя отправителя.');
+      exit;
+    end;
+
+
   // создание OLE-объекта Excel
   ExcelApp := CreateOleObject('Excel.Application');
 

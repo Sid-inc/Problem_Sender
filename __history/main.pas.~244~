@@ -68,7 +68,74 @@ var
   tmparr: array [1..3] of string;
   s: String;
 begin
-//  s:='';
+
+  if FileExists('config.ini') = false then
+    begin
+      ShowMessage('Не найден файл конфигурации. Нужна настройка.');
+      exit;
+    end;
+
+  if ((ChanelsFile='') or (FileExists(ChanelsFile) = false)) then
+    begin
+      ShowMessage('Не задан путь к файлу либо путь некорретный.');
+      exit;
+    end;
+
+  if Theme='' then
+    begin
+      ShowMessage('Не задана тема письма о каналах связи.');
+      exit;
+    end;
+
+  if Recipient_address='' then
+    begin
+      ShowMessage('Не задан адрес получателя для письма о каналах связи.');
+      exit;
+    end;
+
+  if ChanelsDays='' then
+    begin
+      ShowMessage('Не задано количество дней для включения в отчет.');
+      exit;
+    end;
+
+  if Mail_server='' then
+    begin
+      ShowMessage('Не задан почтовый сервер.');
+      exit;
+    end;
+
+  if Mail_port='' then
+    begin
+      ShowMessage('Не задан порт почтового сервера.');
+      exit;
+    end;
+
+  if User_name='' then
+    begin
+      ShowMessage('Не задан порт почтового сервера.');
+      exit;
+    end;
+
+  if Password='' then
+    begin
+      ShowMessage('Не задан порт почтового сервера.');
+      exit;
+    end;
+
+  if Senders_address='' then
+    begin
+      ShowMessage('Не задан порт почтового сервера.');
+      exit;
+    end;
+
+  if Senders_name='' then
+    begin
+      ShowMessage('Не задан порт почтового сервера.');
+      exit;
+    end;
+
+
   // создание OLE-объекта Excel
   ExcelApp := CreateOleObject('Excel.Application');
 
@@ -212,20 +279,18 @@ begin
       Ini.Free;
     end;
 
-    ShowMessage(ChanelsFile+sLineBreak+Theme+sLineBreak+Recipient_address+sLineBreak+ChanelsDays+sLineBreak+Mail_server+sLineBreak+Mail_port+sLineBreak+User_name+sLineBreak+Password+sLineBreak+Senders_address+sLineBreak+Senders_name);
-
 end;
 
 function TMainForm.Send_Email(Theme, Recipient, Email_Message: string): Boolean;
 var
 IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
 begin
-//  try
+  try
     //выбираем SMTP сервер.
     IdSMTP.Host:= Mail_server;
     //порт
     IdSMTP.Port:= StrToInt(Mail_port);
-
+ {
     if ConfigForm.SSLCheckBox.Checked then   //Если нужно использовать SSL
       begin
         IdSMTP.AuthType:=satDefault;
@@ -234,13 +299,12 @@ begin
         IdSSLIOHandlerSocketOpenSSL.Host := IdSMTP.Host;
         IdSSLIOHandlerSocketOpenSSL.Port := IdSMTP.Port;
         IdSSLIOHandlerSocketOpenSSL.DefaultPort := 0;
-        IdSSLIOHandlerSocketOpenSSL.SSLOptions.Method := sslvTLSv1_2;
-        IdSSLIOHandlerSocketOpenSSL.SSLOptions.SSLVersions := [sslvSSLv3];
+        IdSSLIOHandlerSocketOpenSSL.SSLOptions.Method := sslvTLSv1;
         IdSSLIOHandlerSocketOpenSSL.SSLOptions.Mode := sslmUnassigned;
         IdSMTP.IOHandler := IdSSLIOHandlerSocketOpenSSL;
         IdSMTP.UseTLS := utUseImplicitTLS;
       end;
-
+  }
     //логин (для некоторых необходимо писать с доменом).
     IdSMTP.Username:= User_name;
     //пароль от почты.
@@ -266,9 +330,9 @@ begin
     //отсоединяемся
     IdSMTP.Disconnect;
     result:=true;
-//  except
-//    result:=false;
-//  end;
+  except
+    result:=false;
+  end;
   IdSMTP.Free;
 end;
 
