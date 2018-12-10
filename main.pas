@@ -33,6 +33,8 @@ function Cryptor(s, c: string):string;
 
 var
   MainForm: TMainForm;
+  // Каналы + Почта
+  ChanelsEnabled: string; // Включена\отключена обработка файла каналов
   ChanelsFile: string; // Имя файла выгрузки каналов
   Mail_server: string; // Имя почтового сервера
   Mail_port: string; // Порт почтового сервера
@@ -43,6 +45,14 @@ var
   Senders_name: string; // Имя отпарвителя
   Recipient_address: string; // Адрес получателя
   ChanelsDays: string; // Количество дней считаемых проблемными
+
+  //Skynet
+  SkynetEnabled: string;
+  SkynetFile: string;
+  SkynetTheme: string;
+  SkynetRecipient: string;
+  SkynetFilials: array of string;
+  FilialsCount: integer;
 
 implementation
 
@@ -74,31 +84,6 @@ begin
       ShowMessage('Не найден файл конфигурации. Нужна настройка.');
       exit;
     end;
-
-  if ((ChanelsFile='') or (FileExists(ChanelsFile) = false)) then
-    begin
-      ShowMessage('Не задан путь к файлу либо путь некорретный.');
-      exit;
-    end;
-
-  if Theme='' then
-    begin
-      ShowMessage('Не задана тема письма о каналах связи.');
-      exit;
-    end;
-
-  if Recipient_address='' then
-    begin
-      ShowMessage('Не задан адрес получателя для письма о каналах связи.');
-      exit;
-    end;
-
-  if ChanelsDays='' then
-    begin
-      ShowMessage('Не задано количество дней для включения в отчет.');
-      exit;
-    end;
-
   if Mail_server='' then
     begin
       ShowMessage('Не задан почтовый сервер.');
@@ -135,6 +120,32 @@ begin
       exit;
     end;
 
+
+if ChanelsEnabled = 'true' then
+begin
+  if ((ChanelsFile='') or (FileExists(ChanelsFile) = false)) then
+    begin
+      ShowMessage('Не задан путь к файлу либо путь некорретный.');
+      exit;
+    end;
+
+  if Theme='' then
+    begin
+      ShowMessage('Не задана тема письма о каналах связи.');
+      exit;
+    end;
+
+  if Recipient_address='' then
+    begin
+      ShowMessage('Не задан адрес получателя для письма о каналах связи.');
+      exit;
+    end;
+
+  if ChanelsDays='' then
+    begin
+      ShowMessage('Не задано количество дней для включения в отчет.');
+      exit;
+    end;
 
   // создание OLE-объекта Excel
   ExcelApp := CreateOleObject('Excel.Application');
@@ -208,6 +219,8 @@ begin
         else ShowMessage('Письмо по каналам - ERROR');
     end
     else ShowMessage('Отправлять нечего, нет каналов для текущих условий отбора');
+end;
+
 
 end;
 
@@ -261,11 +274,17 @@ end;
 procedure TMainForm.FormCreate(Sender: TObject);
 var
   Ini: Tinifile;
+  i: integer;
 begin
   ChanelsFile := '';
   if FileExists('config.ini') then
     begin
       Ini:=TiniFile.Create(extractfilepath(paramstr(0))+'config.ini');
+      // Каналы и почта
+      if ini.ReadString('Chanels','Enabled','') = 'true' then
+          ChanelsEnabled:='true'
+        else
+          ChanelsEnabled:='false';
       ChanelsFile:=Ini.ReadString('Chanels','File_name','');
       Theme:=Ini.ReadString('Chanels','Theme','');
       Recipient_address:=Ini.ReadString('Chanels','RecipientAddress','');
@@ -276,6 +295,21 @@ begin
       Password:=Cryptor(Ini.ReadString('Mail','UserPassword',''), 'decrypt');
       Senders_address:=Ini.ReadString('Mail','SenderAddress','');
       Senders_name:=Ini.ReadString('Mail','SenderName','');
+      // Skynet
+      if ini.ReadString('Skynet','Enabled','') = 'true' then
+          SkynetEnabled:='true'
+        else
+          SkynetEnabled:='false';
+      SkynetFile:=Ini.ReadString('Skynet', 'File_name', '');
+      SkynetTheme:=Ini.ReadString('Skynet', 'Theme', '');
+      SkynetRecipient:=Ini.ReadString('Skynet', 'RecipientAddress', '');
+      if Ini.ReadInteger('Skynet', 'FilialsCount', 0) <> 0 then
+        begin
+          SetLength(SkynetFilials, Ini.ReadInteger('Skynet', 'FilialsCount', 0));
+          for i := 0 to Ini.ReadInteger('Skynet', 'FilialsCount', 0)-1 do
+            SkynetFilials[i]:=Ini.ReadString('Skynet', IntToStr(i), '');
+          FilialsCount:=Ini.ReadInteger('Skynet', 'FilialsCount', 0);
+        end;
       Ini.Free;
     end;
 
