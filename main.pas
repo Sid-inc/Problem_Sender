@@ -72,7 +72,7 @@ const
   xlCellTypeLastCell = $0000000B;
 var
   ExcelApp, ExcelSheet: OLEVariant;
-  ChannelsSrc: Variant;
+  ChannelsSrc, SkynetSrc: Variant;
   ChannelsResult: array of array of string;
   a, i, j, x, y, sr1, sr2: Integer;
   tmparr: array [1..3] of string;
@@ -206,21 +206,65 @@ begin
             end;
       // Отправка письма
       // Формируем письмо
-      s:='<table border="1"><tr><th><b>Название ОО</b></th><th><b>Тип канала</b></th><th><b>Количество дней не в сети</b></th></tr>';
+      s:='<style>'+sLineBreak;
+      s:=s+'.alert-table {background-color: #fff; color: black; display: flex; justify-content: center;}'+sLineBreak;
+      s:=s+'table {font-family: arial, sans-serif;}'+sLineBreak;
+      s:=s+'td, th {border: 1px solid black; text-align: left; padding: 8px;}'+sLineBreak;
+      s:=s+'th {width: 30%;}'+sLineBreak;
+      s:=s+'th:nth-child(1), th:nth-child(2) {background-color: bisque;}'+sLineBreak;
+      s:=s+'th:nth-child(3) {background-color: tomato; color: white;}'+sLineBreak;
+      s:=s+'tr td:nth-child(3) {background-color: lightgrey; color: white;}'+sLineBreak;
+      s:=s+'tr:hover td {background-color: darkgrey;}'+sLineBreak;
+      s:=s+'</style>'+sLineBreak;
+      s:=s+'<div class="alert-table"><table><tr><th><b>Название ОО</b></th><th><b>Тип канала</b></th><th><b>Количество дней не в сети</b></th></tr>';
       for a := 0 to j-1 do
         begin
           s:=s+'<tr>';
           s:=s+'<td>'+ChannelsResult[a,0]+'</td><td>'+ChannelsResult[a,1]+'</td><td>'+ChannelsResult[a,2]+'</td>';
           s:=s+'</tr>'+sLineBreak;
         end;
-      s:=s+'</table>';
+      s:=s+'</table></div>';
       ChannelsResult:=NIL;
       if (Send_Email(Theme, Recipient_address, s)) then ShowMessage('Письмо по каналам - ОК')
         else ShowMessage('Письмо по каналам - ERROR');
     end
     else ShowMessage('Отправлять нечего, нет каналов для текущих условий отбора');
 end;
+    // Skynet
+if SkynetEnabled = 'true' then
+    begin
+      if ((SkynetFile='') or (FileExists(SkynetFile) = false)) then
+      begin
+        ShowMessage('Не задан путь к файлу либо путь некорретный.');
+        exit;
+      end;
+    // создание OLE-объекта Excel
+    ExcelApp := CreateOleObject('Excel.Application');
 
+    // открытие книги Excel
+    ExcelApp.Workbooks.Open(SkynetFile);
+
+    // открытие листа книги
+    ExcelSheet := ExcelApp.Workbooks[1].WorkSheets[1];
+
+    // выделение последней задействованной ячейки на листе
+    ExcelSheet.Cells.SpecialCells(xlCellTypeLastCell).Activate;
+
+    // получение значений размера выбранного диапазона
+    x := ExcelApp.ActiveCell.Row;
+    y := ExcelApp.ActiveCell.Column;
+
+    // присвоение массиву диапазона ячеек на листе
+    SkynetSrc := ExcelApp.Range['A1', ExcelApp.Cells.Item[X, Y]].Value;
+
+    // закрытие книги и очистка переменных
+    ExcelApp.Quit;
+    ExcelApp := Unassigned;
+    ExcelSheet := Unassigned;
+    // Ищем выключенные каналы и если время выключения больше N дней пишем в результирующий массив
+//    SetLength(ChannelsResult,x,3);
+
+    end;
 
 end;
 
