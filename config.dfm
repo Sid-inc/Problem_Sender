@@ -28,6 +28,10 @@ object ConfigForm: TConfigForm
     TabOrder = 0
     object Channels_Conf: TTabSheet
       Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1082#1072#1085#1072#1083#1086#1074
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object FileNameLabel: TLabel
         Left = 16
         Top = 40

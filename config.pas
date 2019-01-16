@@ -198,7 +198,7 @@ begin
           DelButton.Enabled:=false;
           SkynetThemeEdit.Enabled:=false;
           SkynetRecipientEdit.Enabled:=false;
-          CheckBoxSkynet.Checked:=true;
+          CheckBoxSkynet.Checked:=false;
           main.SkynetEnabled:='false';
         end;
     // ¬кладка каналы и почта

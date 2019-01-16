@@ -37,6 +37,15 @@ object MainForm: TMainForm
     TabOrder = 1
     OnClick = BtnSendClick
   end
+  object StringGrid1: TStringGrid
+    Left = 10
+    Top = 65
+    Width = 320
+    Height = 120
+    FixedCols = 0
+    FixedRows = 0
+    TabOrder = 2
+  end
   object IdSMTP: TIdSMTP
     SASLMechanisms = <>
   end

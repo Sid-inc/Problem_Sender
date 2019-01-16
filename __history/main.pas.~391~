@@ -18,11 +18,13 @@ type
     IdMessage: TIdMessage;
     IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL;
     IdHTTP1: TIdHTTP;
+    StringGrid1: TStringGrid;
     procedure BtnSendClick(Sender: TObject);
     function FormatingDateTime(s: string): TDateTime;
     procedure BtnConfClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     function Send_Email(Theme, Recipient, Email_Message: string): Boolean;
+    function Check_Filial(s: string): Boolean;
   private
     { Private declarations }
   public
@@ -74,10 +76,21 @@ var
   ExcelApp, ExcelSheet: OLEVariant;
   ChannelsSrc, SkynetSrc: Variant;
   ChannelsResult: array of array of string;
+  SkynetResult: array of array of string;
   a, i, j, x, y, sr1, sr2: Integer;
   tmparr: array [1..3] of string;
-  s: String;
+  s, mp0, mp1, mp2, mp3, mp4, mp5, mp6, mp7, mp8: String;
+  mp0_flag, mp1_flag, mp2_flag, mp3_flag, mp4_flag, mp5_flag, mp6_flag, mp7_flag, mp8_flag: boolean;
 begin
+  mp0_flag:=false;
+  mp1_flag:=false;
+  mp2_flag:=false;
+  mp3_flag:=false;
+  mp4_flag:=false;
+  mp5_flag:=false;
+  mp6_flag:=false;
+  mp7_flag:=false;
+  mp8_flag:=false;
 
   if FileExists('config.ini') = false then
     begin
@@ -206,14 +219,24 @@ begin
             end;
       // Отправка письма
       // Формируем письмо
-      s:='<table border="1"><tr><th><b>Название ОО</b></th><th><b>Тип канала</b></th><th><b>Количество дней не в сети</b></th></tr>';
+      s:='<style>'+sLineBreak;
+      s:=s+'.alert-table {background-color: #fff; color: black; display: flex; justify-content: center;}'+sLineBreak;
+      s:=s+'table {font-family: arial, sans-serif;}'+sLineBreak;
+      s:=s+'td, th {border: 1px solid black; text-align: left; padding: 8px;}'+sLineBreak;
+      s:=s+'th {width: 30%;}'+sLineBreak;
+      s:=s+'th:nth-child(1), th:nth-child(2) {background-color: bisque;}'+sLineBreak;
+      s:=s+'th:nth-child(3) {background-color: tomato; color: white;}'+sLineBreak;
+      s:=s+'tr td:nth-child(3) {background-color: lightgrey; color: white;}'+sLineBreak;
+      s:=s+'tr:hover td {background-color: darkgrey;}'+sLineBreak;
+      s:=s+'</style>'+sLineBreak;
+      s:=s+'<div class="alert-table"><table><tr><th><b>Название ОО</b></th><th><b>Тип канала</b></th><th><b>Количество дней не в сети</b></th></tr>';
       for a := 0 to j-1 do
         begin
           s:=s+'<tr>';
           s:=s+'<td>'+ChannelsResult[a,0]+'</td><td>'+ChannelsResult[a,1]+'</td><td>'+ChannelsResult[a,2]+'</td>';
           s:=s+'</tr>'+sLineBreak;
         end;
-      s:=s+'</table>';
+      s:=s+'</table></div>';
       ChannelsResult:=NIL;
       if (Send_Email(Theme, Recipient_address, s)) then ShowMessage('Письмо по каналам - ОК')
         else ShowMessage('Письмо по каналам - ERROR');
@@ -245,19 +268,91 @@ if SkynetEnabled = 'true' then
     y := ExcelApp.ActiveCell.Column;
 
     // присвоение массиву диапазона ячеек на листе
-    SkynetSrc := ExcelApp.Range['A1', ExcelApp.Cells.Item[X, Y]].Value;
+    SkynetSrc := ExcelApp.Range['A2', ExcelApp.Cells.Item[X, Y]].Value;
 
     // закрытие книги и очистка переменных
     ExcelApp.Quit;
     ExcelApp := Unassigned;
     ExcelSheet := Unassigned;
-    // Ищем выключенные каналы и если время выключения больше N дней пишем в результирующий массив
-//    SetLength(ChannelsResult,x,3);
 
+//    SetLength(ChannelsResult,x,3);
+    MainForm.Height:=400;
+    MainForm.Width:=350;
+    StringGrid1.Height:=300;
+    StringGrid1.Width:=330;
+    StringGrid1.RowCount:=x;
+    StringGrid1.ColCount:=y;
+    SetLength(SkynetResult,x,17);//Перепроверить количество столбцов
+    sr2:=0;
+    for sr1 := 1 to x-1 do
+     if (Check_Filial(SkynetSrc[sr1,5])) and ((SkynetSrc[sr1,3]='Новый')or(SkynetSrc[sr1,3]='Открыт')) then
+       begin
+        SkynetResult[sr2,0]:=SkynetSrc[sr1,6];
+        SkynetResult[sr2,1]:=SkynetSrc[sr1,5];
+        SkynetResult[sr2,2]:=SkynetSrc[sr1,4];
+        SkynetResult[sr2,3]:=SkynetSrc[sr1,1];
+        SkynetResult[sr2,4]:=SkynetSrc[sr1,2];
+        SkynetResult[sr2,5]:=SkynetSrc[sr1,3];
+        SkynetResult[sr2,6]:=SkynetSrc[sr1,7];
+        SkynetResult[sr2,7]:=SkynetSrc[sr1,8];
+        SkynetResult[sr2,8]:=SkynetSrc[sr1,9];
+        SkynetResult[sr2,9]:=SkynetSrc[sr1,10];
+        SkynetResult[sr2,10]:=SkynetSrc[sr1,11];
+        SkynetResult[sr2,11]:=SkynetSrc[sr1,13];
+        SkynetResult[sr2,12]:=SkynetSrc[sr1,12];
+        SkynetResult[sr2,13]:=SkynetSrc[sr1,14];
+        SkynetResult[sr2,14]:=SkynetSrc[sr1,15];
+        SkynetResult[sr2,15]:=SkynetSrc[sr1,16];
+        SkynetResult[sr2,16]:=SkynetSrc[sr1,17];
+        sr2:=sr2+1;
+       end;
+//    ShowMessage(inttostr(sr2));
+    for sr1 := 1 to x-1 do
+      for sr2 := 1 to y do
+            StringGrid1.Cells[sr2-1,sr1-1]:=SkynetResult[sr1-1,sr2-1];
+
+    // Формируем письмо Skynet
+    //Просроченные открытия
+    mp0:='<style> th:nth-child(1), th:nth-child(2) {background-color: bisque;} th:nth-child(4) {background-color: tomato; color: white;}';
+    mp0:=mp0+'tr td:nth-child(4) {background-color: lightgrey; color: white;} tr:hover td {background-color: darkgrey;} </style>';
+    mp0:=mp0+'<p style="font-family: arial, sans-serif"><b>Дата открытия уже прошла, а статус "новый"</b></p>'+sLineBreak+'<p style="font-family: arial, sans-serif">Нужно изменить статус или дату открытия<p>'+sLineBreak;
+    mp0:=mp0+'<table style="font-family: arial, sans-serif; background-color: #fff; color: black; display: flex; justify-content: left">';
+    mp0:=mp0+'<tr><th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Филиал</b></th>';
+    mp0:=mp0+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Тип ОО</b></th>';
+    mp0:=mp0+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Код</b></th>';
+    mp0:=mp0+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Название</b></th>';
+    mp0:=mp0+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 10%; background-color: tomato; color: white"><b>Статус</b></th>';
+    mp0:=mp0+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Дата открытия</b></th></tr>';
+//    if FormatingDateTime(SkynetResult[1,6]) > Now then
+//    ShowMessage('Дата меньше текущей, пичалька');
+    for sr1 := 0 to x-1 do
+     if SkynetResult[sr1,6] <> '' then
+      if (FormatingDateTime(SkynetResult[sr1,6]) < Now) and (SkynetResult[sr1,5] = 'Новый') then
+        begin
+          mp0:=mp0+SkynetResult[sr1,0]+' '+SkynetResult[sr1,1]+' '+SkynetResult[sr1,2]+' '+SkynetResult[sr1,3]+' '+SkynetResult[sr1,4]+' '+SkynetResult[sr1,5]+' '+SkynetResult[sr1,6]+' '+sLineBreak;
+          mp0_flag:=true;
+//          ShowMessage(mp0);
+        end;
+    ShowMessage(mp0);
     end;
 
 end;
 
+
+function TMainForm.Check_Filial(s: string): Boolean;
+var x, c: integer;
+begin
+  c:=0;
+  for x := 0 to FilialsCount-1 do
+    begin
+       if s = SkynetFilials[x] then c:=1;
+       if s = SkynetFilials[x]+' ГМ' then c:=1;
+       if s = SkynetFilials[x]+' МК' then c:=1;
+       if s = SkynetFilials[x]+' МА' then c:=1;
+    end;
+  if c = 1 then result:=true
+    else result:=false;
+end;
 
 function Cryptor(s, c: string): string;
 var
