@@ -18,7 +18,6 @@ type
     IdMessage: TIdMessage;
     IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL;
     IdHTTP1: TIdHTTP;
-    StringGrid1: TStringGrid;
     procedure BtnSendClick(Sender: TObject);
     function FormatingDateTime(s: string): TDateTime;
     procedure BtnConfClick(Sender: TObject);
@@ -79,7 +78,7 @@ var
   SkynetResult: array of array of string;
   a, i, j, x, y, sr1, sr2: Integer;
   tmparr: array [1..3] of string;
-  s, mp0, mp1, mp2, mp3, mp4, mp5, mp6, mp7, mp8: String;
+  s, mp, mp0, mp1, mp2, mp3, mp4, mp5, mp6, mp7, mp8: String;
   mp0_flag, mp1_flag, mp2_flag, mp3_flag, mp4_flag, mp5_flag, mp6_flag, mp7_flag, mp8_flag: boolean;
 begin
   mp0_flag:=false;
@@ -91,6 +90,7 @@ begin
   mp6_flag:=false;
   mp7_flag:=false;
   mp8_flag:=false;
+  mp:='';
 
   if FileExists('config.ini') = false then
     begin
@@ -274,17 +274,9 @@ if SkynetEnabled = 'true' then
     ExcelApp.Quit;
     ExcelApp := Unassigned;
     ExcelSheet := Unassigned;
-
-//    SetLength(ChannelsResult,x,3);
-    MainForm.Height:=400;
-    MainForm.Width:=350;
-    StringGrid1.Height:=300;
-    StringGrid1.Width:=330;
-    StringGrid1.RowCount:=x;
-    StringGrid1.ColCount:=y;
     SetLength(SkynetResult,x,17);//Перепроверить количество столбцов
     sr2:=0;
-    for sr1 := 1 to x-1 do
+    for sr1 := 1 to x-1 do // Переносим из архива только те данные которые будем использовать в дальнейшем
      if (Check_Filial(SkynetSrc[sr1,5])) and ((SkynetSrc[sr1,3]='Новый')or(SkynetSrc[sr1,3]='Открыт')) then
        begin
         SkynetResult[sr2,0]:=SkynetSrc[sr1,6];
@@ -306,10 +298,6 @@ if SkynetEnabled = 'true' then
         SkynetResult[sr2,16]:=SkynetSrc[sr1,17];
         sr2:=sr2+1;
        end;
-//    ShowMessage(inttostr(sr2));
-    for sr1 := 1 to x-1 do
-      for sr2 := 1 to y do
-            StringGrid1.Cells[sr2-1,sr1-1]:=SkynetResult[sr1-1,sr2-1];
 
     // Формируем письмо Skynet
     //Просроченные открытия
@@ -326,23 +314,223 @@ if SkynetEnabled = 'true' then
 
     for sr1 := 0 to x-1 do
      if SkynetResult[sr1,6] <> '' then
-      if (FormatingDateTime(SkynetResult[sr1,6]) < Now) and (SkynetResult[sr1,5] = 'Новый') then
+      if (FormatingDateTime(SkynetResult[sr1,6]) <= Now) and (SkynetResult[sr1,5] = 'Новый') then
         begin
-          mp0:=mp0+'<tr><td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,0]+'</td>'+sLineBreak;
-          mp0:=mp0+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,1]+'</td>'+sLineBreak;
-          mp0:=mp0+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,2]+'</td>'+sLineBreak;
-          mp0:=mp0+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,3]+'</td>'+sLineBreak;
-          mp0:=mp0+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,4]+'</td>'+sLineBreak;
-          mp0:=mp0+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,5]+'</td>'+sLineBreak;
-          mp0:=mp0+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,6]+'</td></tr>'+sLineBreak;
+          mp0:=mp0+'<tr><td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,1]+'</td>'+sLineBreak; // Название филиала
+          mp0:=mp0+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,2]+'</td>'+sLineBreak; // Тип ОО
+          mp0:=mp0+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,3]+'</td>'+sLineBreak; // Код
+          mp0:=mp0+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,4]+'</td>'+sLineBreak; // Название
+          mp0:=mp0+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,5]+'</td>'+sLineBreak; // Статус
+          mp0:=mp0+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,6]+'</td></tr>'+sLineBreak; // Дата открытия
           mp0_flag:=true;
-//          ShowMessage(mp0);
         end;
-//    ShowMessage(mp0);
     mp0:=mp0+'</table>';
 
-    if (Send_Email(SkynetTheme, SkynetRecipient, mp0)) then ShowMessage('Письмо по скайнету - ОК')
+    // Грядущие открытия
+    mp1:='<style>';
+    mp1:=mp1+'tr:hover td {background-color: darkgrey;} </style>';
+    mp1:=mp1+'<p style="font-family: arial, sans-serif"><b>Грядущие открытия</b></p>'+sLineBreak+'<p style="font-family: arial, sans-serif">Нужно своевременно изменить статус или дату открытия<p>'+sLineBreak;
+    mp1:=mp1+'<table style="font-family: arial, sans-serif; background-color: #fff; color: black; display: flex; justify-content: left">'+sLineBreak;
+    mp1:=mp1+'<tr><th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Филиал</b></th>'+sLineBreak;
+    mp1:=mp1+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Тип ОО</b></th>'+sLineBreak;
+    mp1:=mp1+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Код</b></th>'+sLineBreak;
+    mp1:=mp1+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Название</b></th>'+sLineBreak;
+    mp1:=mp1+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 10%; background-color: bisque"><b>Статус</b></th>'+sLineBreak;
+    mp1:=mp1+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Дата открытия</b></th></tr>'+sLineBreak;
+
+    for sr1 := 0 to x-1 do
+     if SkynetResult[sr1,6] <> '' then
+      if (FormatingDateTime(SkynetResult[sr1,6]) > Now) and (FormatingDateTime(SkynetResult[sr1,6]) <= Now+7) and (SkynetResult[sr1,5] = 'Новый') then // Если дата открытия больше текущей и меньше текущей+7 дней и статус "новый"
+        begin
+          mp1:=mp1+'<tr><td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,1]+'</td>'+sLineBreak; // Название филиала
+          mp1:=mp1+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,2]+'</td>'+sLineBreak; // Тип ОО
+          mp1:=mp1+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,3]+'</td>'+sLineBreak; // Код
+          mp1:=mp1+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,4]+'</td>'+sLineBreak; // Название
+          mp1:=mp1+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,5]+'</td>'+sLineBreak; // Статус
+          mp1:=mp1+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,6]+'</td></tr>'+sLineBreak; // Дата открытия
+          mp1_flag:=true;
+        end;
+    mp1:=mp1+'</table>';
+
+    // Не заполнен Email
+    mp2:='<style> th:nth-child(1), th:nth-child(2) {background-color: bisque;} th:nth-child(5) {background-color: tomato; color: white;}';
+    mp2:=mp2+'tr td:nth-child(5) {background-color: lightgrey; color: white;} tr:hover td {background-color: darkgrey;} </style>';
+    mp2:=mp2+'<p style="font-family: arial, sans-serif"><b>Не заполнен Email</b></p>'+sLineBreak;
+    mp2:=mp2+'<table style="font-family: arial, sans-serif; background-color: #fff; color: black; display: flex; justify-content: left">'+sLineBreak;
+    mp2:=mp2+'<tr><th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Филиал</b></th>'+sLineBreak;
+    mp2:=mp2+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Тип ОО</b></th>'+sLineBreak;
+    mp2:=mp2+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Код</b></th>'+sLineBreak;
+    mp2:=mp2+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Название</b></th>'+sLineBreak;
+    mp2:=mp2+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 10%; background-color: bisque"><b>Статус</b></th>'+sLineBreak;
+    mp2:=mp2+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: tomato; color: white"><b>Email</b></th></tr>'+sLineBreak;
+
+    for sr1 := 0 to x-1 do
+     if SkynetResult[sr1,6] <> '' then
+      if (SkynetResult[sr1,8] = '') and (SkynetResult[sr1,5] = 'Открыт') then
+        begin
+          mp2:=mp2+'<tr><td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,1]+'</td>'+sLineBreak; // Название филиала
+          mp2:=mp2+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,2]+'</td>'+sLineBreak; // Тип ОО
+          mp2:=mp2+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,3]+'</td>'+sLineBreak; // Код
+          mp2:=mp2+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,4]+'</td>'+sLineBreak; // Название
+          mp2:=mp2+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,5]+'</td>'+sLineBreak; // Статус
+          mp2:=mp2+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,8]+'</td></tr>'+sLineBreak; // Дата открытия
+          mp2_flag:=true;
+        end;
+    mp2:=mp2+'</table>';
+
+    // Не заполнен номер телефона ОО
+    mp3:='<style> th:nth-child(1), th:nth-child(2) {background-color: bisque;} th:nth-child(5) {background-color: tomato; color: white;}';
+    mp3:=mp3+'tr td:nth-child(5) {background-color: lightgrey; color: white;} tr:hover td {background-color: darkgrey;} </style>';
+    mp3:=mp3+'<p style="font-family: arial, sans-serif"><b>Не заполнен номер телефона ОО</b></p>'+sLineBreak;
+    mp3:=mp3+'<table style="font-family: arial, sans-serif; background-color: #fff; color: black; display: flex; justify-content: left">'+sLineBreak;
+    mp3:=mp3+'<tr><th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Филиал</b></th>'+sLineBreak;
+    mp3:=mp3+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Тип ОО</b></th>'+sLineBreak;
+    mp3:=mp3+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Код</b></th>'+sLineBreak;
+    mp3:=mp3+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Название</b></th>'+sLineBreak;
+    mp3:=mp3+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 10%; background-color: bisque"><b>Статус</b></th>'+sLineBreak;
+    mp3:=mp3+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: tomato; color: white"><b>Номер телефона ОО</b></th></tr>'+sLineBreak;
+
+    for sr1 := 0 to x-1 do
+     if SkynetResult[sr1,6] <> '' then
+      if (SkynetResult[sr1,9] = '') and (SkynetResult[sr1,5] = 'Открыт') then
+        begin
+          mp3:=mp3+'<tr><td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,1]+'</td>'+sLineBreak; // Название филиала
+          mp3:=mp3+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,2]+'</td>'+sLineBreak; // Тип ОО
+          mp3:=mp3+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,3]+'</td>'+sLineBreak; // Код
+          mp3:=mp3+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,4]+'</td>'+sLineBreak; // Название
+          mp3:=mp3+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,5]+'</td>'+sLineBreak; // Статус
+          mp3:=mp3+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,9]+'</td></tr>'+sLineBreak; // Email
+          mp3_flag:=true;
+        end;
+    mp3:=mp3+'</table>';
+
+    // Дублирующиеся номера телефона ОО
+    //    Делаем массив под дубли
+    //    Набиваем дублями этот массив
+    //    Выводим этот массив
+
+    // Не заполнено расстояние до ОО
+    mp5:='<style> th:nth-child(1), th:nth-child(2) {background-color: bisque;} th:nth-child(5) {background-color: tomato; color: white;}';
+    mp5:=mp5+'tr td:nth-child(5) {background-color: lightgrey; color: white;} tr:hover td {background-color: darkgrey;} </style>';
+    mp5:=mp5+'<p style="font-family: arial, sans-serif"><b>Не заполнено расстояние до ОО</b></p>'+sLineBreak;
+    mp5:=mp5+'<table style="font-family: arial, sans-serif; background-color: #fff; color: black; display: flex; justify-content: left">'+sLineBreak;
+    mp5:=mp5+'<tr><th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Филиал</b></th>'+sLineBreak;
+    mp5:=mp5+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Тип ОО</b></th>'+sLineBreak;
+    mp5:=mp5+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Код</b></th>'+sLineBreak;
+    mp5:=mp5+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Название</b></th>'+sLineBreak;
+    mp5:=mp5+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 10%; background-color: bisque"><b>Статус</b></th>'+sLineBreak;
+    mp5:=mp5+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: tomato; color: white"><b>Расстояние до ОО</b></th></tr>'+sLineBreak;
+
+    for sr1 := 0 to x-1 do
+     if SkynetResult[sr1,6] <> '' then
+      if (SkynetResult[sr1,10] = '') and (SkynetResult[sr1,5] = 'Открыт') then
+        begin
+          mp5:=mp5+'<tr><td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,1]+'</td>'+sLineBreak; // Название филиала
+          mp5:=mp5+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,2]+'</td>'+sLineBreak; // Тип ОО
+          mp5:=mp5+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,3]+'</td>'+sLineBreak; // Код
+          mp5:=mp5+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,4]+'</td>'+sLineBreak; // Название
+          mp5:=mp5+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,5]+'</td>'+sLineBreak; // Статус
+          mp5:=mp5+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,10]+'</td></tr>'+sLineBreak; // Расстояние до ОО
+          mp5_flag:=true;
+        end;
+    mp5:=mp5+'</table>';
+
+    // Не заполнен ЦП
+    mp6:='<style> th:nth-child(1), th:nth-child(2) {background-color: bisque;} th:nth-child(5) {background-color: tomato; color: white;}';
+    mp6:=mp6+'tr td:nth-child(5) {background-color: lightgrey; color: white;} tr:hover td {background-color: darkgrey;} </style>';
+    mp6:=mp6+'<p style="font-family: arial, sans-serif"><b>Не заполнено центр поддержки</b></p>'+sLineBreak;
+    mp6:=mp6+'<table style="font-family: arial, sans-serif; background-color: #fff; color: black; display: flex; justify-content: left">'+sLineBreak;
+    mp6:=mp6+'<tr><th style="border: 1px solid black; text-align: left; padding: 8px; width: 14%; background-color: bisque"><b>Филиал</b></th>'+sLineBreak;
+    mp6:=mp6+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 14%; background-color: bisque"><b>Тип ОО</b></th>'+sLineBreak;
+    mp6:=mp6+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 14%; background-color: bisque"><b>Код</b></th>'+sLineBreak;
+    mp6:=mp6+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 14%; background-color: bisque"><b>Название</b></th>'+sLineBreak;
+    mp6:=mp6+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 10%; background-color: bisque"><b>Статус</b></th>'+sLineBreak;
+    mp6:=mp6+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 14%; background-color: tomato; color: white"><b>Код ЦП</b></th>'+sLineBreak;
+    mp6:=mp6+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 14%; background-color: tomato; color: white"><b>Название ЦП</b></th></tr>'+sLineBreak;
+
+    for sr1 := 0 to x-1 do
+     if SkynetResult[sr1,6] <> '' then
+      if (SkynetResult[sr1,11] = '') and (SkynetResult[sr1,5] = 'Открыт') then
+        begin
+          mp6:=mp6+'<tr><td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,1]+'</td>'+sLineBreak; // Название филиала
+          mp6:=mp6+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,2]+'</td>'+sLineBreak; // Тип ОО
+          mp6:=mp6+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,3]+'</td>'+sLineBreak; // Код
+          mp6:=mp6+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,4]+'</td>'+sLineBreak; // Название
+          mp6:=mp6+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,5]+'</td>'+sLineBreak; // Статус
+          mp6:=mp6+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,11]+'</td>'+sLineBreak; // Код ЦП
+          mp6:=mp6+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,12]+'</td></tr>'+sLineBreak; // Название ЦП
+          mp6_flag:=true;
+        end;
+    mp6:=mp6+'</table>';
+
+    // Не заполнено ФИО системотехника
+    mp7:='<style> th:nth-child(1), th:nth-child(2) {background-color: bisque;} th:nth-child(5) {background-color: tomato; color: white;}';
+    mp7:=mp7+'tr td:nth-child(5) {background-color: lightgrey; color: white;} tr:hover td {background-color: darkgrey;} </style>';
+    mp7:=mp7+'<p style="font-family: arial, sans-serif"><b>Не заполнено ФИО системотехника</b></p>'+sLineBreak;
+    mp7:=mp7+'<table style="font-family: arial, sans-serif; background-color: #fff; color: black; display: flex; justify-content: left">'+sLineBreak;
+    mp7:=mp7+'<tr><th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Филиал</b></th>'+sLineBreak;
+    mp7:=mp7+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Тип ОО</b></th>'+sLineBreak;
+    mp7:=mp7+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Код</b></th>'+sLineBreak;
+    mp7:=mp7+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Название</b></th>'+sLineBreak;
+    mp7:=mp7+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 10%; background-color: bisque"><b>Статус</b></th>'+sLineBreak;
+    mp7:=mp7+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: tomato; color: white"><b>ФИО системотехника</b></th></tr>'+sLineBreak;
+
+    for sr1 := 0 to x-1 do
+     if SkynetResult[sr1,6] <> '' then
+      if (SkynetResult[sr1,13] = '') and (SkynetResult[sr1,5] = 'Открыт') then
+        begin
+          mp7:=mp7+'<tr><td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,1]+'</td>'+sLineBreak; // Название филиала
+          mp7:=mp7+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,2]+'</td>'+sLineBreak; // Тип ОО
+          mp7:=mp7+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,3]+'</td>'+sLineBreak; // Код
+          mp7:=mp7+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,4]+'</td>'+sLineBreak; // Название
+          mp7:=mp7+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,5]+'</td>'+sLineBreak; // Статус
+          mp7:=mp7+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,13]+'</td></tr>'+sLineBreak; // ФИО системотехника
+          mp7_flag:=true;
+        end;
+    mp7:=mp7+'</table>';
+
+    // Не заполнен номер телефона системотехника
+    mp8:='<style> th:nth-child(1), th:nth-child(2) {background-color: bisque;} th:nth-child(5) {background-color: tomato; color: white;}';
+    mp8:=mp8+'tr td:nth-child(5) {background-color: lightgrey; color: white;} tr:hover td {background-color: darkgrey;} </style>';
+    mp8:=mp8+'<p style="font-family: arial, sans-serif"><b>Не заполнен номер телефона системотехника</b></p>'+sLineBreak;
+    mp8:=mp8+'<table style="font-family: arial, sans-serif; background-color: #fff; color: black; display: flex; justify-content: left">'+sLineBreak;
+    mp8:=mp8+'<tr><th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Филиал</b></th>'+sLineBreak;
+    mp8:=mp8+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Тип ОО</b></th>'+sLineBreak;
+    mp8:=mp8+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Код</b></th>'+sLineBreak;
+    mp8:=mp8+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Название</b></th>'+sLineBreak;
+    mp8:=mp8+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 10%; background-color: bisque"><b>Статус</b></th>'+sLineBreak;
+    mp8:=mp8+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: tomato; color: white"><b>Номер телефона системотехника</b></th></tr>'+sLineBreak;
+
+    for sr1 := 0 to x-1 do
+     if SkynetResult[sr1,6] <> '' then
+      if (SkynetResult[sr1,14] = '') and (SkynetResult[sr1,5] = 'Открыт') then
+        begin
+          mp8:=mp8+'<tr><td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,1]+'</td>'+sLineBreak; // Название филиала
+          mp8:=mp8+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,2]+'</td>'+sLineBreak; // Тип ОО
+          mp8:=mp8+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,3]+'</td>'+sLineBreak; // Код
+          mp8:=mp8+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,4]+'</td>'+sLineBreak; // Название
+          mp8:=mp8+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,5]+'</td>'+sLineBreak; // Статус
+          mp8:=mp8+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,14]+'</td></tr>'+sLineBreak; // Номер телефона системотехника
+          mp8_flag:=true;
+        end;
+    mp8:=mp8+'</table>';
+
+
+    // Собираем в одно письмо все результаты обработки
+    if mp0_flag then mp:=mp+mp0;
+    if mp1_flag then mp:=mp+mp1;
+    if mp2_flag then mp:=mp+mp2;
+    if mp3_flag then mp:=mp+mp3;
+    if mp4_flag then mp:=mp+mp4;
+    if mp5_flag then mp:=mp+mp5;
+    if mp6_flag then mp:=mp+mp6;
+    if mp7_flag then mp:=mp+mp7;
+    if mp8_flag then mp:=mp+mp8;
+
+    if mp <> '' then
+      if (Send_Email(SkynetTheme, SkynetRecipient, mp)) then ShowMessage('Письмо по скайнету - ОК')
         else ShowMessage('Письмо по скайнету - ERROR');
+
     end;
 
 end;
