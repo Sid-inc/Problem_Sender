@@ -74,12 +74,11 @@ const
 var
   ExcelApp, ExcelSheet: OLEVariant;
   ChannelsSrc, SkynetSrc: Variant;
-  ChannelsResult: array of array of string;
-  SkynetResult: array of array of string;
+  ChannelsResult, SkynetResult, Repeated: array of array of string;
   a, i, j, x, y, sr1, sr2: Integer;
   tmparr: array [1..3] of string;
   s, mp, mp0, mp1, mp2, mp3, mp4, mp5, mp6, mp7, mp8: String;
-  mp0_flag, mp1_flag, mp2_flag, mp3_flag, mp4_flag, mp5_flag, mp6_flag, mp7_flag, mp8_flag: boolean;
+  mp0_flag, mp1_flag, mp2_flag, mp3_flag, mp4_flag, mp5_flag, mp6_flag, mp7_flag, mp8_flag, repeat_flag1, repeat_flag2 :boolean;
 begin
   mp0_flag:=false;
   mp1_flag:=false;
@@ -90,6 +89,7 @@ begin
   mp6_flag:=false;
   mp7_flag:=false;
   mp8_flag:=false;
+  repeat_flag:=false;
   mp:='';
 
   if FileExists('config.ini') = false then
@@ -373,7 +373,7 @@ if SkynetEnabled = 'true' then
           mp2:=mp2+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,3]+'</td>'+sLineBreak; // Код
           mp2:=mp2+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,4]+'</td>'+sLineBreak; // Название
           mp2:=mp2+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,5]+'</td>'+sLineBreak; // Статус
-          mp2:=mp2+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,8]+'</td></tr>'+sLineBreak; // Дата открытия
+          mp2:=mp2+'<td style="border: 1px black solid; text-align: left; color: white">'+SkynetResult[sr1,8]+'_</td></tr>'+sLineBreak; // Email
           mp2_flag:=true;
         end;
     mp2:=mp2+'</table>';
@@ -399,15 +399,19 @@ if SkynetEnabled = 'true' then
           mp3:=mp3+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,3]+'</td>'+sLineBreak; // Код
           mp3:=mp3+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,4]+'</td>'+sLineBreak; // Название
           mp3:=mp3+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,5]+'</td>'+sLineBreak; // Статус
-          mp3:=mp3+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,9]+'</td></tr>'+sLineBreak; // Email
+          mp3:=mp3+'<td style="border: 1px black solid; text-align: left; color: white">'+SkynetResult[sr1,9]+'_</td></tr>'+sLineBreak; // Номер телефона ОО
           mp3_flag:=true;
         end;
     mp3:=mp3+'</table>';
 
     // Дублирующиеся номера телефона ОО
-    //    Делаем массив под дубли
-    //    Набиваем дублями этот массив
-    //    Выводим этот массив
+    SetLength(Repeated,x,5);  // Нумерация с нуля
+    for sr1 := 0 to x-1 do
+      begin
+        for sr2 := 0 to x-1 do
+            if SkynetResult[sr1,9] = Repeated[sr2, 5] then repeat_flag1:=true;
+
+      end;
 
     // Не заполнено расстояние до ОО
     mp5:='<style>';
@@ -430,7 +434,7 @@ if SkynetEnabled = 'true' then
           mp5:=mp5+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,3]+'</td>'+sLineBreak; // Код
           mp5:=mp5+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,4]+'</td>'+sLineBreak; // Название
           mp5:=mp5+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,5]+'</td>'+sLineBreak; // Статус
-          mp5:=mp5+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,10]+'</td></tr>'+sLineBreak; // Расстояние до ОО
+          mp5:=mp5+'<td style="border: 1px black solid; text-align: left; color: white">'+SkynetResult[sr1,10]+'_</td></tr>'+sLineBreak; // Расстояние до ОО
           mp5_flag:=true;
         end;
     mp5:=mp5+'</table>';
@@ -457,8 +461,8 @@ if SkynetEnabled = 'true' then
           mp6:=mp6+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,3]+'</td>'+sLineBreak; // Код
           mp6:=mp6+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,4]+'</td>'+sLineBreak; // Название
           mp6:=mp6+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,5]+'</td>'+sLineBreak; // Статус
-          mp6:=mp6+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,11]+'</td>'+sLineBreak; // Код ЦП
-          mp6:=mp6+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,12]+'</td></tr>'+sLineBreak; // Название ЦП
+          mp6:=mp6+'<td style="border: 1px black solid; text-align: left; color: white">'+SkynetResult[sr1,11]+'_</td>'+sLineBreak; // Код ЦП
+          mp6:=mp6+'<td style="border: 1px black solid; text-align: left; color: white">'+SkynetResult[sr1,12]+'_</td></tr>'+sLineBreak; // Название ЦП
           mp6_flag:=true;
         end;
     mp6:=mp6+'</table>';
@@ -484,14 +488,14 @@ if SkynetEnabled = 'true' then
           mp7:=mp7+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,3]+'</td>'+sLineBreak; // Код
           mp7:=mp7+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,4]+'</td>'+sLineBreak; // Название
           mp7:=mp7+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,5]+'</td>'+sLineBreak; // Статус
-          mp7:=mp7+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,13]+'</td></tr>'+sLineBreak; // ФИО системотехника
+          mp7:=mp7+'<td style="border: 1px black solid; text-align: left; color: white">'+SkynetResult[sr1,13]+'_</td></tr>'+sLineBreak; // ФИО системотехника
           mp7_flag:=true;
         end;
     mp7:=mp7+'</table>';
 
     // Не заполнен номер телефона системотехника
-    mp8:='<style> th:nth-child(1), th:nth-child(2) {background-color: bisque;} th:nth-child(5) {background-color: tomato; color: white;}';
-    mp8:=mp8+'tr td:nth-child(5) {background-color: lightgrey; color: white;} tr:hover td {background-color: darkgrey;} </style>';
+    mp8:='<style>';
+    mp8:=mp8+'tr:hover td {background-color: darkgrey;} </style>';
     mp8:=mp8+'<p style="font-family: arial, sans-serif"><b>Не заполнен номер телефона системотехника</b></p>'+sLineBreak;
     mp8:=mp8+'<table style="font-family: arial, sans-serif; background-color: #fff; color: black; display: flex; justify-content: left">'+sLineBreak;
     mp8:=mp8+'<tr><th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Филиал</b></th>'+sLineBreak;
@@ -510,7 +514,7 @@ if SkynetEnabled = 'true' then
           mp8:=mp8+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,3]+'</td>'+sLineBreak; // Код
           mp8:=mp8+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,4]+'</td>'+sLineBreak; // Название
           mp8:=mp8+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,5]+'</td>'+sLineBreak; // Статус
-          mp8:=mp8+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,14]+'</td></tr>'+sLineBreak; // Номер телефона системотехника
+          mp8:=mp8+'<td style="border: 1px black solid; text-align: left; color: white">'+SkynetResult[sr1,14]+'_</td></tr>'+sLineBreak; // Номер телефона системотехника
           mp8_flag:=true;
         end;
     mp8:=mp8+'</table>';
