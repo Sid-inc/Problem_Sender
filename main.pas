@@ -407,7 +407,7 @@ if SkynetEnabled = 'true' then
     mp3:=mp3+'</table>';
 
     // Дублирующиеся номера телефона ОО
-    SetLength(Repeated,x,5);  // Нумерация с нуля
+    SetLength(Repeated,x,6);  // Нумерация с нуля
     for sr1 := 0 to x-1 do
       begin
         repeat_flag1:=false;
@@ -462,6 +462,7 @@ if SkynetEnabled = 'true' then
         mp4_flag:=true;
       end;
     mp4:=mp4+'</table>';
+    ShowMessage(mp4);
 
     // Не заполнено расстояние до ОО
     mp5:='<style>';

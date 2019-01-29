@@ -75,7 +75,7 @@ var
   ExcelApp, ExcelSheet: OLEVariant;
   ChannelsSrc, SkynetSrc: Variant;
   ChannelsResult, SkynetResult, Repeated: array of array of string;
-  a, i, j, x, y, sr1, sr2: Integer;
+  a, i, j, x, y, sr1, sr2, repeat_count: Integer;
   tmparr: array [1..3] of string;
   s, mp, mp0, mp1, mp2, mp3, mp4, mp5, mp6, mp7, mp8: String;
   mp0_flag, mp1_flag, mp2_flag, mp3_flag, mp4_flag, mp5_flag, mp6_flag, mp7_flag, mp8_flag, repeat_flag1, repeat_flag2 :boolean;
@@ -92,6 +92,7 @@ begin
   repeat_flag1:=false;
   repeat_flag2:=false;
   mp:='';
+  repeat_count:=0;
 
   if FileExists('config.ini') = false then
     begin
@@ -409,10 +410,58 @@ if SkynetEnabled = 'true' then
     SetLength(Repeated,x,5);  // Нумерация с нуля
     for sr1 := 0 to x-1 do
       begin
+        repeat_flag1:=false;
         for sr2 := 0 to x-1 do
             if SkynetResult[sr1,9] = Repeated[sr2, 5] then repeat_flag1:=true;
-
+        if repeat_flag1 = false then
+          begin
+            repeat_flag2:=false;
+            for sr2 := sr1 to x-2 do
+              if SkynetResult[sr1,9] = SkynetResult[sr2+1,9] then
+                begin
+                  repeat_flag2:=true;
+                  Repeated[repeat_count,0]:=SkynetResult[sr2+1,1];
+                  Repeated[repeat_count,1]:=SkynetResult[sr2+1,2];
+                  Repeated[repeat_count,2]:=SkynetResult[sr2+1,3];
+                  Repeated[repeat_count,3]:=SkynetResult[sr2+1,4];
+                  Repeated[repeat_count,4]:=SkynetResult[sr2+1,5];
+                  Repeated[repeat_count,5]:=SkynetResult[sr2+1,9];
+                  repeat_count:=repeat_count+1;
+                end;
+            if repeat_flag2 then
+              begin
+                  Repeated[repeat_count,0]:=SkynetResult[sr1,1];
+                  Repeated[repeat_count,1]:=SkynetResult[sr1,2];
+                  Repeated[repeat_count,2]:=SkynetResult[sr1,3];
+                  Repeated[repeat_count,3]:=SkynetResult[sr1,4];
+                  Repeated[repeat_count,4]:=SkynetResult[sr1,5];
+                  Repeated[repeat_count,5]:=SkynetResult[sr1,9];
+                  repeat_count:=repeat_count+1;
+              end;
+          end;
       end;
+    mp4:='<style>';
+    mp4:=mp3+'tr:hover td {background-color: darkgrey;} </style>';
+    mp4:=mp4+'<p style="font-family: arial, sans-serif"><b>Не заполнен номер телефона ОО</b></p>'+sLineBreak;
+    mp4:=mp4+'<table style="font-family: arial, sans-serif; background-color: #fff; color: black; display: flex; justify-content: left">'+sLineBreak;
+    mp4:=mp4+'<tr><th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Филиал</b></th>'+sLineBreak;
+    mp4:=mp4+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Тип ОО</b></th>'+sLineBreak;
+    mp4:=mp4+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Код</b></th>'+sLineBreak;
+    mp4:=mp4+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Название</b></th>'+sLineBreak;
+    mp4:=mp4+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 10%; background-color: bisque"><b>Статус</b></th>'+sLineBreak;
+    mp4:=mp4+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: tomato; color: white"><b>Номер телефона ОО</b></th></tr>'+sLineBreak;
+
+    for sr1 := 0 to repeat_count do
+      begin
+        mp4:=mp4+'<tr><td style="border: 1px black solid; text-align: left">'+Repeated[sr1,0]+'</td>'+sLineBreak; // Название филиала
+        mp4:=mp4+'<td style="border: 1px black solid; text-align: left">'+Repeated[sr1,1]+'</td>'+sLineBreak; // Тип ОО
+        mp4:=mp4+'<td style="border: 1px black solid; text-align: left">'+Repeated[sr1,2]+'</td>'+sLineBreak; // Код
+        mp4:=mp4+'<td style="border: 1px black solid; text-align: left">'+Repeated[sr1,3]+'</td>'+sLineBreak; // Название
+        mp4:=mp4+'<td style="border: 1px black solid; text-align: left">'+Repeated[sr1,4]+'</td>'+sLineBreak; // Статус
+        mp4:=mp4+'<td style="border: 1px black solid; text-align: left">'+Repeated[sr1,5]+'</td></tr>'+sLineBreak; // Номер телефона ОО
+        mp4_flag:=true;
+      end;
+    mp4:=mp4+'</table>';
 
     // Не заполнено расстояние до ОО
     mp5:='<style>';
