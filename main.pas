@@ -451,7 +451,7 @@ if SkynetEnabled = 'true' then
     mp4:=mp4+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 10%; background-color: bisque"><b>Статус</b></th>'+sLineBreak;
     mp4:=mp4+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: tomato; color: white"><b>Номер телефона ОО</b></th></tr>'+sLineBreak;
 
-    for sr1 := 0 to repeat_count do
+    for sr1 := 0 to repeat_count-1 do
       begin
         mp4:=mp4+'<tr><td style="border: 1px black solid; text-align: left">'+Repeated[sr1,0]+'</td>'+sLineBreak; // Название филиала
         mp4:=mp4+'<td style="border: 1px black solid; text-align: left">'+Repeated[sr1,1]+'</td>'+sLineBreak; // Тип ОО
@@ -462,7 +462,7 @@ if SkynetEnabled = 'true' then
         mp4_flag:=true;
       end;
     mp4:=mp4+'</table>';
-    ShowMessage(mp4);
+//    ShowMessage(mp4);
 
     // Не заполнено расстояние до ОО
     mp5:='<style>';
