@@ -441,8 +441,8 @@ if SkynetEnabled = 'true' then
           end;
       end;
     mp4:='<style>';
-    mp4:=mp3+'tr:hover td {background-color: darkgrey;} </style>';
-    mp4:=mp4+'<p style="font-family: arial, sans-serif"><b>Не заполнен номер телефона ОО</b></p>'+sLineBreak;
+    mp4:=mp4+'tr:hover td {background-color: darkgrey;} </style>';
+    mp4:=mp4+'<p style="font-family: arial, sans-serif"><b>Задублированы номера телефонов ОО</b></p>'+sLineBreak;
     mp4:=mp4+'<table style="font-family: arial, sans-serif; background-color: #fff; color: black; display: flex; justify-content: left">'+sLineBreak;
     mp4:=mp4+'<tr><th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Филиал</b></th>'+sLineBreak;
     mp4:=mp4+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Тип ОО</b></th>'+sLineBreak;
@@ -748,6 +748,7 @@ begin
   except
     result:=false;
   end;
+  IdSMTP.Disconnect;
   IdSMTP.Free;
 end;
 

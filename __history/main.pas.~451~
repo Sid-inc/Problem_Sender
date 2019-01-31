@@ -407,7 +407,7 @@ if SkynetEnabled = 'true' then
     mp3:=mp3+'</table>';
 
     // Дублирующиеся номера телефона ОО
-    SetLength(Repeated,x,5);  // Нумерация с нуля
+    SetLength(Repeated,x,6);  // Нумерация с нуля
     for sr1 := 0 to x-1 do
       begin
         repeat_flag1:=false;
@@ -440,6 +440,29 @@ if SkynetEnabled = 'true' then
               end;
           end;
       end;
+    mp4:='<style>';
+    mp4:=mp3+'tr:hover td {background-color: darkgrey;} </style>';
+    mp4:=mp4+'<p style="font-family: arial, sans-serif"><b>Не заполнен номер телефона ОО</b></p>'+sLineBreak;
+    mp4:=mp4+'<table style="font-family: arial, sans-serif; background-color: #fff; color: black; display: flex; justify-content: left">'+sLineBreak;
+    mp4:=mp4+'<tr><th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Филиал</b></th>'+sLineBreak;
+    mp4:=mp4+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Тип ОО</b></th>'+sLineBreak;
+    mp4:=mp4+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Код</b></th>'+sLineBreak;
+    mp4:=mp4+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Название</b></th>'+sLineBreak;
+    mp4:=mp4+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 10%; background-color: bisque"><b>Статус</b></th>'+sLineBreak;
+    mp4:=mp4+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: tomato; color: white"><b>Номер телефона ОО</b></th></tr>'+sLineBreak;
+
+    for sr1 := 0 to repeat_count-1 do
+      begin
+        mp4:=mp4+'<tr><td style="border: 1px black solid; text-align: left">'+Repeated[sr1,0]+'</td>'+sLineBreak; // Название филиала
+        mp4:=mp4+'<td style="border: 1px black solid; text-align: left">'+Repeated[sr1,1]+'</td>'+sLineBreak; // Тип ОО
+        mp4:=mp4+'<td style="border: 1px black solid; text-align: left">'+Repeated[sr1,2]+'</td>'+sLineBreak; // Код
+        mp4:=mp4+'<td style="border: 1px black solid; text-align: left">'+Repeated[sr1,3]+'</td>'+sLineBreak; // Название
+        mp4:=mp4+'<td style="border: 1px black solid; text-align: left">'+Repeated[sr1,4]+'</td>'+sLineBreak; // Статус
+        mp4:=mp4+'<td style="border: 1px black solid; text-align: left">'+Repeated[sr1,5]+'</td></tr>'+sLineBreak; // Номер телефона ОО
+        mp4_flag:=true;
+      end;
+    mp4:=mp4+'</table>';
+//    ShowMessage(mp4);
 
     // Не заполнено расстояние до ОО
     mp5:='<style>';
