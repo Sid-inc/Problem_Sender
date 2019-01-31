@@ -505,7 +505,7 @@ if SkynetEnabled = 'true' then
 
     for sr1 := 0 to x-1 do
      if SkynetResult[sr1,6] <> '' then
-      if (SkynetResult[sr1,11] = '') and (SkynetResult[sr1,5] = 'Открыт') then
+      if (SkynetResult[sr1,12] = '') and (SkynetResult[sr1,5] = 'Открыт') then
         begin
           mp6:=mp6+'<tr><td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,1]+'</td>'+sLineBreak; // Название филиала
           mp6:=mp6+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,2]+'</td>'+sLineBreak; // Тип ОО
