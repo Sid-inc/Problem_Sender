@@ -24,7 +24,7 @@ object ConfigForm: TConfigForm
     Top = 8
     Width = 417
     Height = 249
-    ActivePage = Skynet_Conf
+    ActivePage = Channels_Conf
     TabOrder = 0
     object Channels_Conf: TTabSheet
       Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1082#1072#1085#1072#1083#1086#1074
@@ -188,6 +188,7 @@ object ConfigForm: TConfigForm
         Height = 17
         Caption = #1042#1082#1083#1102#1095#1080#1090#1100' '#1086#1073#1088#1072#1073#1086#1090#1082#1091' Skynet'
         TabOrder = 0
+        OnClick = CheckBoxSkynetClick
       end
       object SkynetFileNameEdit: TEdit
         Left = 176
@@ -195,6 +196,53 @@ object ConfigForm: TConfigForm
         Width = 179
         Height = 21
         TabOrder = 1
+      end
+      object FilialNameEdit: TEdit
+        Left = 64
+        Top = 69
+        Width = 97
+        Height = 21
+        TabOrder = 2
+      end
+      object FilialsListBox: TListBox
+        Left = 16
+        Top = 96
+        Width = 145
+        Height = 113
+        ItemHeight = 13
+        TabOrder = 3
+      end
+      object AddButton: TButton
+        Left = 167
+        Top = 67
+        Width = 23
+        Height = 23
+        Caption = '+'
+        TabOrder = 4
+        OnClick = AddButtonClick
+      end
+      object DelButton: TButton
+        Left = 167
+        Top = 96
+        Width = 23
+        Height = 23
+        Caption = '-'
+        TabOrder = 5
+        OnClick = DelButtonClick
+      end
+      object SkynetThemeEdit: TEdit
+        Left = 202
+        Top = 96
+        Width = 191
+        Height = 21
+        TabOrder = 6
+      end
+      object SkynetRecipientEdit: TEdit
+        Left = 202
+        Top = 154
+        Width = 191
+        Height = 21
+        TabOrder = 7
       end
       object SkynetOpenBtn: TBitBtn
         Left = 361
@@ -249,52 +297,8 @@ object ConfigForm: TConfigForm
           DBF1FCDBF1FBEDF8FDFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
-        TabOrder = 2
-      end
-      object FilialNameEdit: TEdit
-        Left = 64
-        Top = 69
-        Width = 97
-        Height = 21
-        TabOrder = 3
-      end
-      object FilialsListBox: TListBox
-        Left = 16
-        Top = 96
-        Width = 145
-        Height = 113
-        ItemHeight = 13
-        TabOrder = 4
-      end
-      object AddButton: TButton
-        Left = 167
-        Top = 67
-        Width = 23
-        Height = 23
-        Caption = '+'
-        TabOrder = 5
-      end
-      object DelButton: TButton
-        Left = 167
-        Top = 96
-        Width = 23
-        Height = 23
-        Caption = '-'
-        TabOrder = 6
-      end
-      object SkynetThemeEdit: TEdit
-        Left = 202
-        Top = 96
-        Width = 191
-        Height = 21
-        TabOrder = 7
-      end
-      object SkynetRecipientEdit: TEdit
-        Left = 202
-        Top = 154
-        Width = 191
-        Height = 21
         TabOrder = 8
+        OnClick = SkynetOpenBtnClick
       end
     end
     object Mail_Conf: TTabSheet

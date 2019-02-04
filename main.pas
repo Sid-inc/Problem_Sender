@@ -77,7 +77,7 @@ var
   ChannelsResult, SkynetResult, Repeated: array of array of string;
   a, i, j, x, y, sr1, sr2, repeat_count: Integer;
   tmparr: array [1..3] of string;
-  s, mp, mp0, mp1, mp2, mp3, mp4, mp5, mp6, mp7, mp8: String;
+  s, mp, mp0, mp1, mp2, mp3, mp4, mp5, mp6, mp7, mp8, check_msg: String;
   mp0_flag, mp1_flag, mp2_flag, mp3_flag, mp4_flag, mp5_flag, mp6_flag, mp7_flag, mp8_flag, repeat_flag1, repeat_flag2 :boolean;
 begin
   mp0_flag:=false;
@@ -93,6 +93,7 @@ begin
   repeat_flag2:=false;
   mp:='';
   repeat_count:=0;
+  check_msg:='Ничего не отправлено';
 
   if FileExists('config.ini') = false then
     begin
@@ -240,8 +241,9 @@ begin
         end;
       s:=s+'</table></div>';
       ChannelsResult:=NIL;
-      if (Send_Email(Theme, Recipient_address, s)) then ShowMessage('Письмо по каналам - ОК')
-        else ShowMessage('Письмо по каналам - ERROR');
+      if (Send_Email(Theme, Recipient_address, s)) then check_msg:='Письмо по каналам - ОК'+sLineBreak
+        else check_msg:='Письмо по каналам - ERROR'+sLineBreak;
+
     end
     else ShowMessage('Отправлять нечего, нет каналов для текущих условий отбора');
 end;
@@ -250,10 +252,28 @@ if SkynetEnabled = 'true' then
     begin
       if ((SkynetFile='') or (FileExists(SkynetFile) = false)) then
       begin
-        ShowMessage('Не задан путь к файлу либо путь некорретный.');
+        ShowMessage('Не задан путь к файлу Skynet либо путь некорретный.');
         exit;
       end;
-    // создание OLE-объекта Excel
+
+      if SkynetTheme='' then
+      begin
+        ShowMessage('Не задана тема письма Skynet.');
+        exit;
+      end;
+
+      if SkynetRecipient='' then
+      begin
+        ShowMessage('Не задан адрес получателя для письма о Skynet.');
+        exit;
+      end;
+
+      if FilialsCount=0 then
+      begin
+        ShowMessage('Не заданы филиалы для проверки Skynet.');
+        exit;
+      end;
+  // создание OLE-объекта Excel
     ExcelApp := CreateOleObject('Excel.Application');
 
     // открытие книги Excel
@@ -583,11 +603,10 @@ if SkynetEnabled = 'true' then
     if mp8_flag then mp:=mp+mp8;
 
     if mp <> '' then
-      if (Send_Email(SkynetTheme, SkynetRecipient, mp)) then ShowMessage('Письмо по скайнету - ОК')
-        else ShowMessage('Письмо по скайнету - ERROR');
-
+      if (Send_Email(SkynetTheme, SkynetRecipient, mp)) then check_msg:=check_msg+'Письмо по скайнету - ОК'
+        else check_msg:=check_msg+'Письмо по скайнету - ERROR';
     end;
-
+ ShowMessage(check_msg);
 end;
 
 
@@ -749,7 +768,7 @@ begin
     result:=false;
   end;
   IdSMTP.Disconnect;
-  IdSMTP.Free;
+//  IdSMTP.Free;
 end;
 
 end.

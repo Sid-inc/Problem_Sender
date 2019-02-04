@@ -60,6 +60,7 @@ type
     procedure AddButtonClick(Sender: TObject);
     procedure DelButtonClick(Sender: TObject);
     procedure CheckBoxSkynetClick(Sender: TObject);
+    procedure OpenBtnClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -222,6 +223,11 @@ begin
           FilialsListBox.Items.Add(Ini.ReadString('Skynet', IntToStr(i), ''));
       Ini.Free;
     end;
+end;
+
+procedure TConfigForm.OpenBtnClick(Sender: TObject);
+begin
+  if OpenDialog.Execute then FileNameEdit.Text:=OpenDialog.FileName;
 end;
 
 procedure TConfigForm.SaveClick(Sender: TObject);

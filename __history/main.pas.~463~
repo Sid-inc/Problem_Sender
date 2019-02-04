@@ -242,6 +242,7 @@ begin
       ChannelsResult:=NIL;
       if (Send_Email(Theme, Recipient_address, s)) then ShowMessage('Письмо по каналам - ОК')
         else ShowMessage('Письмо по каналам - ERROR');
+
     end
     else ShowMessage('Отправлять нечего, нет каналов для текущих условий отбора');
 end;
@@ -442,7 +443,7 @@ if SkynetEnabled = 'true' then
       end;
     mp4:='<style>';
     mp4:=mp4+'tr:hover td {background-color: darkgrey;} </style>';
-    mp4:=mp4+'<p style="font-family: arial, sans-serif"><b>Не заполнен номер телефона ОО</b></p>'+sLineBreak;
+    mp4:=mp4+'<p style="font-family: arial, sans-serif"><b>Задублированы номера телефонов ОО</b></p>'+sLineBreak;
     mp4:=mp4+'<table style="font-family: arial, sans-serif; background-color: #fff; color: black; display: flex; justify-content: left">'+sLineBreak;
     mp4:=mp4+'<tr><th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Филиал</b></th>'+sLineBreak;
     mp4:=mp4+'<th style="border: 1px solid black; text-align: left; padding: 8px; width: 16%; background-color: bisque"><b>Тип ОО</b></th>'+sLineBreak;
@@ -505,7 +506,7 @@ if SkynetEnabled = 'true' then
 
     for sr1 := 0 to x-1 do
      if SkynetResult[sr1,6] <> '' then
-      if (SkynetResult[sr1,11] = '') and (SkynetResult[sr1,5] = 'Открыт') then
+      if (SkynetResult[sr1,12] = '') and (SkynetResult[sr1,5] = 'Открыт') then
         begin
           mp6:=mp6+'<tr><td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,1]+'</td>'+sLineBreak; // Название филиала
           mp6:=mp6+'<td style="border: 1px black solid; text-align: left">'+SkynetResult[sr1,2]+'</td>'+sLineBreak; // Тип ОО
@@ -585,7 +586,6 @@ if SkynetEnabled = 'true' then
     if mp <> '' then
       if (Send_Email(SkynetTheme, SkynetRecipient, mp)) then ShowMessage('Письмо по скайнету - ОК')
         else ShowMessage('Письмо по скайнету - ERROR');
-
     end;
 
 end;
@@ -700,6 +700,8 @@ function TMainForm.Send_Email(Theme, Recipient, Email_Message: string): Boolean;
 var
 IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
 begin
+//  IdSMTP.Free;
+  IdMessage.Clear;
   try
     //выбираем SMTP сервер.
     IdSMTP.Host:= Mail_server;
@@ -707,7 +709,7 @@ begin
     IdSMTP.Port:= StrToInt(Mail_port);
  {
     if ConfigForm.SSLCheckBox.Checked then   //Если нужно использовать SSL
-      begin
+      begin}
         IdSMTP.AuthType:=satDefault;
         IdSSLIOHandlerSocketOpenSSL:= TIdSSLIOHandlerSocketOpenSSL.Create(nil);
         IdSSLIOHandlerSocketOpenSSL.Destination := IdSMTP.Host+':'+IntToStr(IdSMTP.Port);
@@ -718,7 +720,7 @@ begin
         IdSSLIOHandlerSocketOpenSSL.SSLOptions.Mode := sslmUnassigned;
         IdSMTP.IOHandler := IdSSLIOHandlerSocketOpenSSL;
         IdSMTP.UseTLS := utUseImplicitTLS;
-      end;
+   {   end;
   }
     //логин (для некоторых необходимо писать с доменом).
     IdSMTP.Username:= User_name;
@@ -748,6 +750,7 @@ begin
   except
     result:=false;
   end;
+  IdSMTP.Disconnect;
   IdSMTP.Free;
 end;
 
