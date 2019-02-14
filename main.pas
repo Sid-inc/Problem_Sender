@@ -430,33 +430,36 @@ if SkynetEnabled = 'true' then
     SetLength(Repeated,x,6);  // Нумерация с нуля
     for sr1 := 0 to x-1 do
       begin
-        repeat_flag1:=false;
-        for sr2 := 0 to x-1 do
-            if SkynetResult[sr1,9] = Repeated[sr2, 5] then repeat_flag1:=true;
-        if repeat_flag1 = false then
+        if SkynetResult[sr1,5] = 'Открыт' then
           begin
-            repeat_flag2:=false;
-            for sr2 := sr1 to x-2 do
-              if SkynetResult[sr1,9] = SkynetResult[sr2+1,9] then
-                begin
-                  repeat_flag2:=true;
-                  Repeated[repeat_count,0]:=SkynetResult[sr2+1,1];
-                  Repeated[repeat_count,1]:=SkynetResult[sr2+1,2];
-                  Repeated[repeat_count,2]:=SkynetResult[sr2+1,3];
-                  Repeated[repeat_count,3]:=SkynetResult[sr2+1,4];
-                  Repeated[repeat_count,4]:=SkynetResult[sr2+1,5];
-                  Repeated[repeat_count,5]:=SkynetResult[sr2+1,9];
-                  repeat_count:=repeat_count+1;
-                end;
-            if repeat_flag2 then
+            repeat_flag1:=false;
+            for sr2 := 0 to x-1 do
+                if SkynetResult[sr1,9] = Repeated[sr2, 5] then repeat_flag1:=true;
+            if repeat_flag1 = false then
               begin
-                  Repeated[repeat_count,0]:=SkynetResult[sr1,1];
-                  Repeated[repeat_count,1]:=SkynetResult[sr1,2];
-                  Repeated[repeat_count,2]:=SkynetResult[sr1,3];
-                  Repeated[repeat_count,3]:=SkynetResult[sr1,4];
-                  Repeated[repeat_count,4]:=SkynetResult[sr1,5];
-                  Repeated[repeat_count,5]:=SkynetResult[sr1,9];
-                  repeat_count:=repeat_count+1;
+                repeat_flag2:=false;
+                for sr2 := sr1 to x-2 do
+                  if SkynetResult[sr1,9] = SkynetResult[sr2+1,9] then
+                    begin
+                      repeat_flag2:=true;
+                      Repeated[repeat_count,0]:=SkynetResult[sr2+1,1];
+                      Repeated[repeat_count,1]:=SkynetResult[sr2+1,2];
+                      Repeated[repeat_count,2]:=SkynetResult[sr2+1,3];
+                      Repeated[repeat_count,3]:=SkynetResult[sr2+1,4];
+                      Repeated[repeat_count,4]:=SkynetResult[sr2+1,5];
+                      Repeated[repeat_count,5]:=SkynetResult[sr2+1,9];
+                      repeat_count:=repeat_count+1;
+                    end;
+                if repeat_flag2 then
+                  begin
+                      Repeated[repeat_count,0]:=SkynetResult[sr1,1];
+                      Repeated[repeat_count,1]:=SkynetResult[sr1,2];
+                      Repeated[repeat_count,2]:=SkynetResult[sr1,3];
+                      Repeated[repeat_count,3]:=SkynetResult[sr1,4];
+                      Repeated[repeat_count,4]:=SkynetResult[sr1,5];
+                      Repeated[repeat_count,5]:=SkynetResult[sr1,9];
+                      repeat_count:=repeat_count+1;
+                  end;
               end;
           end;
       end;

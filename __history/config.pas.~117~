@@ -55,12 +55,12 @@ type
     procedure FormShow(Sender: TObject);
     procedure SaveClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
-    procedure OpenBtnClick(Sender: TObject);
     procedure CheckBoxChannelsClick(Sender: TObject);
     procedure SkynetOpenBtnClick(Sender: TObject);
     procedure AddButtonClick(Sender: TObject);
     procedure DelButtonClick(Sender: TObject);
     procedure CheckBoxSkynetClick(Sender: TObject);
+    procedure OpenBtnClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -149,6 +149,7 @@ end;
 procedure TConfigForm.FormShow(Sender: TObject);
 var
   Ini: Tinifile;
+  i: integer;
 begin
   if FileExists('config.ini') then
     begin
@@ -185,6 +186,7 @@ begin
           DelButton.Enabled:=true;
           SkynetThemeEdit.Enabled:=true;
           SkynetRecipientEdit.Enabled:=true;
+          CheckBoxSkynet.Checked:=true;
           main.SkynetEnabled:='true';
         end
         else
@@ -197,6 +199,7 @@ begin
           DelButton.Enabled:=false;
           SkynetThemeEdit.Enabled:=false;
           SkynetRecipientEdit.Enabled:=false;
+          CheckBoxSkynet.Checked:=false;
           main.SkynetEnabled:='false';
         end;
     // ¬кладка каналы и почта
@@ -210,19 +213,21 @@ begin
       PasswordEdit.Text:=main.Cryptor(Ini.ReadString('Mail','UserPassword',''), 'decrypt');
       SenderAddressEdit.Text:=Ini.ReadString('Mail','SenderAddress','');
       SenderNameEdit.Text:=Ini.ReadString('Mail','SenderName','');
-    // ¬лкадка Skynet
+    // ¬кладка Skynet
       SkynetFileNameEdit.Text:=Ini.ReadString('Skynet', 'File_Name', '');
       SkynetThemeEdit.Text:=Ini.ReadString('Skynet', 'Theme', '');
       SkynetRecipientEdit.Text:=Ini.ReadString('Skynet', 'RecipientAddress', '');
-
-
+      FilialsListBox.Clear;
+      if Ini.ReadInteger('Skynet','FilialsCount',0) <> 0 then
+        for i := 0 to Ini.ReadInteger('Skynet','FilialsCount',0)-1 do
+          FilialsListBox.Items.Add(Ini.ReadString('Skynet', IntToStr(i), ''));
       Ini.Free;
     end;
 end;
 
 procedure TConfigForm.OpenBtnClick(Sender: TObject);
 begin
- if OpenDialog.Execute then FileNameEdit.Text:=OpenDialog.FileName;
+  if OpenDialog.Execute then FileNameEdit.Text:=OpenDialog.FileName;
 end;
 
 procedure TConfigForm.SaveClick(Sender: TObject);

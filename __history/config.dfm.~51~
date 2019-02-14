@@ -188,6 +188,7 @@ object ConfigForm: TConfigForm
         Height = 17
         Caption = #1042#1082#1083#1102#1095#1080#1090#1100' '#1086#1073#1088#1072#1073#1086#1090#1082#1091' Skynet'
         TabOrder = 0
+        OnClick = CheckBoxSkynetClick
       end
       object SkynetFileNameEdit: TEdit
         Left = 176
@@ -218,6 +219,7 @@ object ConfigForm: TConfigForm
         Height = 23
         Caption = '+'
         TabOrder = 4
+        OnClick = AddButtonClick
       end
       object DelButton: TButton
         Left = 167
@@ -226,6 +228,7 @@ object ConfigForm: TConfigForm
         Height = 23
         Caption = '-'
         TabOrder = 5
+        OnClick = DelButtonClick
       end
       object SkynetThemeEdit: TEdit
         Left = 202

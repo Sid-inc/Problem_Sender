@@ -78,7 +78,7 @@ uses main;
 
 procedure TConfigForm.AddButtonClick(Sender: TObject);
 begin
-FilialsListBox.Items.Add(FilialNameEdit.Text);
+if FilialNameEdit.Text <> '' then FilialsListBox.Items.Add(FilialNameEdit.Text);
 FilialNameEdit.Text:='';
 end;
 

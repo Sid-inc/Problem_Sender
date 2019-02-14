@@ -24,7 +24,7 @@ object ConfigForm: TConfigForm
     Top = 8
     Width = 417
     Height = 249
-    ActivePage = Skynet_Conf
+    ActivePage = Channels_Conf
     TabOrder = 0
     object Channels_Conf: TTabSheet
       Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1082#1072#1085#1072#1083#1086#1074
@@ -188,6 +188,7 @@ object ConfigForm: TConfigForm
         Height = 17
         Caption = #1042#1082#1083#1102#1095#1080#1090#1100' '#1086#1073#1088#1072#1073#1086#1090#1082#1091' Skynet'
         TabOrder = 0
+        OnClick = CheckBoxSkynetClick
       end
       object SkynetFileNameEdit: TEdit
         Left = 176
@@ -227,6 +228,7 @@ object ConfigForm: TConfigForm
         Height = 23
         Caption = '-'
         TabOrder = 5
+        OnClick = DelButtonClick
       end
       object SkynetThemeEdit: TEdit
         Left = 202
@@ -302,6 +304,10 @@ object ConfigForm: TConfigForm
     object Mail_Conf: TTabSheet
       Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1087#1086#1095#1090#1099
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object ServerAddressLabel: TLabel
         Left = 11
         Top = 11
