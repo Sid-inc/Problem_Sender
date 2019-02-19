@@ -55,6 +55,8 @@ var
   SkynetFilials: array of string;
   FilialsCount: integer;
 
+  mode_auto: boolean; //Запуск с параметром -а
+
 implementation
 
 {$R *.dfm}
@@ -93,7 +95,7 @@ begin
   repeat_flag2:=false;
   mp:='';
   repeat_count:=0;
-  check_msg:='Ничего не отправлено';
+//  check_msg:='Ничего не отправлено';
 
   if FileExists('config.ini') = false then
     begin
@@ -439,6 +441,8 @@ if SkynetEnabled = 'true' then
               begin
                 repeat_flag2:=false;
                 for sr2 := sr1 to x-2 do
+                 if SkynetResult[sr2+1,5] = 'Открыт' then
+                 begin
                   if SkynetResult[sr1,9] = SkynetResult[sr2+1,9] then
                     begin
                       repeat_flag2:=true;
@@ -450,6 +454,7 @@ if SkynetEnabled = 'true' then
                       Repeated[repeat_count,5]:=SkynetResult[sr2+1,9];
                       repeat_count:=repeat_count+1;
                     end;
+                 end;
                 if repeat_flag2 then
                   begin
                       Repeated[repeat_count,0]:=SkynetResult[sr1,1];
@@ -485,7 +490,6 @@ if SkynetEnabled = 'true' then
         mp4_flag:=true;
       end;
     mp4:=mp4+'</table>';
-//    ShowMessage(mp4);
 
     // Не заполнено расстояние до ОО
     mp5:='<style>';
@@ -609,7 +613,7 @@ if SkynetEnabled = 'true' then
       if (Send_Email(SkynetTheme, SkynetRecipient, mp)) then check_msg:=check_msg+'Письмо по скайнету - ОК'
         else check_msg:=check_msg+'Письмо по скайнету - ERROR';
     end;
- ShowMessage(check_msg);
+ if mode_auto = false then ShowMessage(check_msg);
 end;
 
 
@@ -679,6 +683,8 @@ var
   Ini: Tinifile;
   i: integer;
 begin
+  if ParamStr(1)= '-a' then mode_auto:=true
+                       else mode_auto:=false;
   ChanelsFile := '';
   if FileExists('config.ini') then
     begin
@@ -716,6 +722,11 @@ begin
       Ini.Free;
     end;
 
+    if mode_auto then
+      begin
+        BtnSend.Click;
+        Close;
+      end;
 end;
 
 function TMainForm.Send_Email(Theme, Recipient, Email_Message: string): Boolean;
