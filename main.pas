@@ -613,7 +613,8 @@ if SkynetEnabled = 'true' then
       if (Send_Email(SkynetTheme, SkynetRecipient, mp)) then check_msg:=check_msg+'Письмо по скайнету - ОК'
         else check_msg:=check_msg+'Письмо по скайнету - ERROR';
     end;
- if mode_auto = false then ShowMessage(check_msg);
+ if mode_auto = false then ShowMessage(check_msg)
+    else MainForm.Close;
 end;
 
 
@@ -722,11 +723,8 @@ begin
       Ini.Free;
     end;
 
-    if mode_auto then
-      begin
-        BtnSend.Click;
-        Close;
-      end;
+    if mode_auto then BtnSend.Click;
+
 end;
 
 function TMainForm.Send_Email(Theme, Recipient, Email_Message: string): Boolean;
