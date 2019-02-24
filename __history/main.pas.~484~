@@ -613,7 +613,8 @@ if SkynetEnabled = 'true' then
       if (Send_Email(SkynetTheme, SkynetRecipient, mp)) then check_msg:=check_msg+'Письмо по скайнету - ОК'
         else check_msg:=check_msg+'Письмо по скайнету - ERROR';
     end;
- ShowMessage(check_msg);
+ if mode_auto = false then ShowMessage(check_msg)
+    else MainForm.Close;
 end;
 
 
@@ -683,7 +684,8 @@ var
   Ini: Tinifile;
   i: integer;
 begin
-
+  if ParamStr(1)= '-a' then mode_auto:=true
+                       else mode_auto:=false;
   ChanelsFile := '';
   if FileExists('config.ini') then
     begin
@@ -720,6 +722,8 @@ begin
         end;
       Ini.Free;
     end;
+
+    if mode_auto then BtnSend.Click;
 
 end;
 

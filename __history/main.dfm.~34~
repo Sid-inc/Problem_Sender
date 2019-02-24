@@ -17,6 +17,7 @@ object MainForm: TMainForm
   OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object BtnConf: TButton
@@ -77,5 +78,10 @@ object MainForm: TMainForm
     Request.Ranges = <>
     HTTPOptions = [hoForceEncodeParams]
     Left = 72
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 3000
+    Left = 104
   end
 end

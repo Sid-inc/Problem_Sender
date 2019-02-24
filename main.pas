@@ -8,7 +8,7 @@ uses
   IdAntiFreezeBase, Vcl.IdAntiFreeze, IdBaseComponent, IdComponent,
   IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient,
   IdSMTPBase, IdSMTP, IdMessage, IdIOHandler, IdIOHandlerStack, IdSSL, IdSSLOpenSSL, IdCustomTransparentProxy, IdSocks,
-  IdHTTP, idAttachment, IdAttachmentFile, IdIOHandlerSocket;
+  IdHTTP, idAttachment, IdAttachmentFile, IdIOHandlerSocket, Vcl.ExtCtrls;
 
 type
   TMainForm = class(TForm)
@@ -18,12 +18,15 @@ type
     IdMessage: TIdMessage;
     IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL;
     IdHTTP1: TIdHTTP;
+    Timer1: TTimer;
     procedure BtnSendClick(Sender: TObject);
     function FormatingDateTime(s: string): TDateTime;
     procedure BtnConfClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     function Send_Email(Theme, Recipient, Email_Message: string): Boolean;
     function Check_Filial(s: string): Boolean;
+    procedure FormShow(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
   private
     { Private declarations }
   public
@@ -613,8 +616,8 @@ if SkynetEnabled = 'true' then
       if (Send_Email(SkynetTheme, SkynetRecipient, mp)) then check_msg:=check_msg+'Письмо по скайнету - ОК'
         else check_msg:=check_msg+'Письмо по скайнету - ERROR';
     end;
- if mode_auto = false then ShowMessage(check_msg)
-    else MainForm.Close;
+ if mode_auto = false then ShowMessage(check_msg);
+
 end;
 
 
@@ -727,6 +730,11 @@ begin
 
 end;
 
+procedure TMainForm.FormShow(Sender: TObject);
+begin
+      if mode_auto then Timer1.Enabled:=true;
+end;
+
 function TMainForm.Send_Email(Theme, Recipient, Email_Message: string): Boolean;
 var
 IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
@@ -781,6 +789,11 @@ begin
   end;
   IdSMTP.Disconnect;
 //  IdSMTP.Free;
+end;
+
+procedure TMainForm.Timer1Timer(Sender: TObject);
+begin
+MainForm.Close;
 end;
 
 end.
