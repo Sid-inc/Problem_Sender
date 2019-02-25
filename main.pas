@@ -726,8 +726,6 @@ begin
       Ini.Free;
     end;
 
-    if mode_auto then BtnSend.Click;
-
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -793,6 +791,8 @@ end;
 
 procedure TMainForm.Timer1Timer(Sender: TObject);
 begin
+Timer1.Enabled:=false;
+BtnSend.Click;
 MainForm.Close;
 end;
 
