@@ -27,6 +27,7 @@ type
     function Check_Filial(s: string): Boolean;
     procedure FormShow(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
+    procedure IdleEventHandler(Sender: TObject; var Done: Boolean);
   private
     { Private declarations }
   public
@@ -65,6 +66,65 @@ implementation
 {$R *.dfm}
 
 uses config;
+
+
+procedure TMainForm.IdleEventHandler(Sender: TObject; var Done: Boolean);
+var
+  Ini: Tinifile;
+  i: integer;
+begin
+if ParamStr(1)= '-a' then
+         Begin
+          mode_auto:=true;
+          //
+          //
+          //
+            ChanelsFile := '';
+          if FileExists('config.ini') then
+          begin
+          Ini:=TiniFile.Create(extractfilepath(paramstr(0))+'config.ini');
+          // Каналы и почта
+          if ini.ReadString('Chanels','Enabled','') = 'true' then
+              ChanelsEnabled:='true'
+            else
+          ChanelsEnabled:='false';
+          ChanelsFile:=Ini.ReadString('Chanels','File_name','');
+          Theme:=Ini.ReadString('Chanels','Theme','');
+          Recipient_address:=Ini.ReadString('Chanels','RecipientAddress','');
+          ChanelsDays:=Ini.ReadString('Chanels','ChanelsDays','');
+          Mail_server:=Ini.ReadString('Mail','ServerAddress','');
+          Mail_port:=Ini.ReadString('Mail','ServerPort','');
+          User_name:=Ini.ReadString('Mail','UserName','');
+          Password:=Cryptor(Ini.ReadString('Mail','UserPassword',''), 'decrypt');
+          Senders_address:=Ini.ReadString('Mail','SenderAddress','');
+          Senders_name:=Ini.ReadString('Mail','SenderName','');
+          // Skynet
+          if ini.ReadString('Skynet','Enabled','') = 'true' then
+              SkynetEnabled:='true'
+            else
+              SkynetEnabled:='false';
+          SkynetFile:=Ini.ReadString('Skynet', 'File_name', '');
+          SkynetTheme:=Ini.ReadString('Skynet', 'Theme', '');
+          SkynetRecipient:=Ini.ReadString('Skynet', 'RecipientAddress', '');
+          if Ini.ReadInteger('Skynet', 'FilialsCount', 0) <> 0 then
+            begin
+              SetLength(SkynetFilials, Ini.ReadInteger('Skynet', 'FilialsCount', 0));
+              for i := 0 to Ini.ReadInteger('Skynet', 'FilialsCount', 0)-1 do
+                SkynetFilials[i]:=Ini.ReadString('Skynet', IntToStr(i), '');
+              FilialsCount:=Ini.ReadInteger('Skynet', 'FilialsCount', 0);
+            end;
+          Ini.Free;
+          end;
+
+
+          //
+          //
+          //
+          BtnSend.Click;
+          Application.Terminate;
+         End
+         else mode_auto:=false;
+end;
 
 procedure TMainForm.BtnConfClick(Sender: TObject);
 begin
@@ -687,8 +747,9 @@ var
   Ini: Tinifile;
   i: integer;
 begin
-  if ParamStr(1)= '-a' then mode_auto:=true
-                       else mode_auto:=false;
+  Application.OnIdle := IdleEventHandler;
+ // if ParamStr(1)= '-a' then mode_auto:=true
+ //                      else mode_auto:=false;
   ChanelsFile := '';
   if FileExists('config.ini') then
     begin
@@ -730,7 +791,7 @@ end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
-      if mode_auto then Timer1.Enabled:=true;
+//      if mode_auto then Timer1.Enabled:=true;
 end;
 
 function TMainForm.Send_Email(Theme, Recipient, Email_Message: string): Boolean;
@@ -791,9 +852,12 @@ end;
 
 procedure TMainForm.Timer1Timer(Sender: TObject);
 begin
-Timer1.Enabled:=false;
-BtnSend.Click;
-MainForm.Close;
+//Timer1.Enabled:=false;
+//BtnSend.Click;
+//Application.Terminate;
 end;
+
+
+
 
 end.

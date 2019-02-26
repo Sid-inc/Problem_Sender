@@ -25,6 +25,9 @@ type
     procedure FormCreate(Sender: TObject);
     function Send_Email(Theme, Recipient, Email_Message: string): Boolean;
     function Check_Filial(s: string): Boolean;
+    procedure FormShow(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure ApplicationEventslldle(Sender: TObject; var Done: Boolean);
   private
     { Private declarations }
   public
@@ -63,6 +66,16 @@ implementation
 {$R *.dfm}
 
 uses config;
+
+
+procedure TMainForm.ApplicationEventslldle(Sender: TObject; var Done: Boolean);
+begin
+if ParamStr(1)= '-a' then
+         Begin
+          mode_auto:=true;
+          Timer1.Enabled:=true;
+         End;
+end;
 
 procedure TMainForm.BtnConfClick(Sender: TObject);
 begin
@@ -614,8 +627,8 @@ if SkynetEnabled = 'true' then
       if (Send_Email(SkynetTheme, SkynetRecipient, mp)) then check_msg:=check_msg+'Письмо по скайнету - ОК'
         else check_msg:=check_msg+'Письмо по скайнету - ERROR';
     end;
- if mode_auto = false then ShowMessage(check_msg)
-    else MainForm.Close;
+ if mode_auto = false then ShowMessage(check_msg);
+
 end;
 
 
@@ -724,8 +737,11 @@ begin
       Ini.Free;
     end;
 
-    if mode_auto then BtnSend.Click;
+end;
 
+procedure TMainForm.FormShow(Sender: TObject);
+begin
+      if mode_auto then Timer1.Enabled:=true;
 end;
 
 function TMainForm.Send_Email(Theme, Recipient, Email_Message: string): Boolean;
@@ -783,5 +799,15 @@ begin
   IdSMTP.Disconnect;
 //  IdSMTP.Free;
 end;
+
+procedure TMainForm.Timer1Timer(Sender: TObject);
+begin
+Timer1.Enabled:=false;
+BtnSend.Click;
+MainForm.Close;
+end;
+
+
+
 
 end.

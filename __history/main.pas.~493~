@@ -8,7 +8,7 @@ uses
   IdAntiFreezeBase, Vcl.IdAntiFreeze, IdBaseComponent, IdComponent,
   IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient,
   IdSMTPBase, IdSMTP, IdMessage, IdIOHandler, IdIOHandlerStack, IdSSL, IdSSLOpenSSL, IdCustomTransparentProxy, IdSocks,
-  IdHTTP, idAttachment, IdAttachmentFile, IdIOHandlerSocket;
+  IdHTTP, idAttachment, IdAttachmentFile, IdIOHandlerSocket, Vcl.ExtCtrls;
 
 type
   TMainForm = class(TForm)
@@ -18,12 +18,16 @@ type
     IdMessage: TIdMessage;
     IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL;
     IdHTTP1: TIdHTTP;
+    Timer1: TTimer;
     procedure BtnSendClick(Sender: TObject);
     function FormatingDateTime(s: string): TDateTime;
     procedure BtnConfClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     function Send_Email(Theme, Recipient, Email_Message: string): Boolean;
     function Check_Filial(s: string): Boolean;
+    procedure FormShow(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure ApplicationEventslldle(Sender: TObject; var Done: Boolean);
   private
     { Private declarations }
   public
@@ -62,6 +66,19 @@ implementation
 {$R *.dfm}
 
 uses config;
+
+
+procedure TMainForm.ApplicationEventslldle(Sender: TObject; var Done: Boolean);
+begin
+if ParamStr(1)= '-a' then
+         Begin
+          mode_auto:=true;
+          MainForm.FormCreate;
+          BtnSend.Click;
+          Application.Terminate;
+         End
+         else mode_auto:=false;
+end;
 
 procedure TMainForm.BtnConfClick(Sender: TObject);
 begin
@@ -614,6 +631,7 @@ if SkynetEnabled = 'true' then
         else check_msg:=check_msg+'Письмо по скайнету - ERROR';
     end;
  if mode_auto = false then ShowMessage(check_msg);
+
 end;
 
 
@@ -683,8 +701,8 @@ var
   Ini: Tinifile;
   i: integer;
 begin
-  if ParamStr(1)= '-a' then mode_auto:=true
-                       else mode_auto:=false;
+ // if ParamStr(1)= '-a' then mode_auto:=true
+ //                      else mode_auto:=false;
   ChanelsFile := '';
   if FileExists('config.ini') then
     begin
@@ -722,8 +740,11 @@ begin
       Ini.Free;
     end;
 
-    if mode_auto then BtnSend.Click;
+end;
 
+procedure TMainForm.FormShow(Sender: TObject);
+begin
+//      if mode_auto then Timer1.Enabled:=true;
 end;
 
 function TMainForm.Send_Email(Theme, Recipient, Email_Message: string): Boolean;
@@ -781,5 +802,15 @@ begin
   IdSMTP.Disconnect;
 //  IdSMTP.Free;
 end;
+
+procedure TMainForm.Timer1Timer(Sender: TObject);
+begin
+//Timer1.Enabled:=false;
+//BtnSend.Click;
+//Application.Terminate;
+end;
+
+
+
 
 end.
